@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cachai"
+version = "0.1.0"
+authors = [
+    {name = "Diego Beltrán Flores", email = "d.beltran@outlook.cl"},
+]
+description = "Customizable visualization toolkit for Python."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://github.com/DD-Beltran-F/cachai"
