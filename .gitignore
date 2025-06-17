@@ -1,4 +1,22 @@
+# Temp
 __pycache__/
+.pytest_cache/
 *.pyc
 dist/
 *.egg-info/
+
+# Jupyter/IPython
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Configs ad virtual enviroments
+.env
+venv/
+.envs/
+*.env
+
+# Outputs
+*.csv
+*.png
+*.pdf
+*.log
