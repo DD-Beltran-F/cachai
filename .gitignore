@@ -16,6 +16,7 @@ venv/
 *.env
 
 # Outputs
+images/
 *.csv
 *.png
 *.pdf

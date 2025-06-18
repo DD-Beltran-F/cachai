@@ -6,7 +6,7 @@ from cachai import utilities as util
 from   matplotlib import pyplot as plt
 from   matplotlib.patches import Arc, Circle, PathPatch
 from   matplotlib.path import Path
-from   matplotlib.colors import Normalize
+import matplotlib.colors as mtpl_colors
 
 
 class ChordDiagram():
@@ -125,6 +125,7 @@ class ChordDiagram():
         self.nodes = dict()
         self.order = [i for i in range(len(corr_matrix))]
         self.global_indexes = []
+        if self.fontdict is None: self.fontdict = {'size':self.fontsize}
         
         # Initialize collections
         self.node_patches       = []
@@ -188,7 +189,12 @@ class ChordDiagram():
     # Main generation methods
     def __generate_diagram(self):
         """Generate the complete chord diagram"""
+        
+        for i,color in enumerate(self.colors):
+            if isinstance(color,str): self.colors[i] = mtpl_colors.to_rgb(color)
+            
         if self.filter == True: self.__filter_nodes()
+        
         if len(self.corr_matrix) == 0:
             self._print_msg(f'No variables left. All correlations are below threshold = {self.threshold}')
         else:
@@ -206,7 +212,7 @@ class ChordDiagram():
                                      ha='center', va='center',
                                      rasterized=self.rasterized,
                                      clip_on=True,
-                                     fontdict={'size': self.fontsize})
+                                     fontdict=self.fontdict)
                 self.node_labels.append(label)
             flat_chord_patches = [p for plist in self.chord_patches for p in plist]
             flat_bezier_curves = [c for clist in self.bezier_curves for c in clist]
@@ -267,7 +273,8 @@ class ChordDiagram():
                 real_corr[node]          = 0
                 node_ports_state[node+1] = -1
                 real_corr[node+1]        = 0
-            corr_norm = np.abs(real_corr)/np.sum(np.abs(real_corr))
+            if np.sum(real_corr) == 0: corr_norm = real_corr
+            else: corr_norm = np.abs(real_corr)/np.sum(np.abs(real_corr))
 
             for j,(rho,port_size,port_state) in enumerate(zip(corr,corr_norm,node_ports_state)):
                 if   j == node     : port_id = node
@@ -475,7 +482,7 @@ class ChordDiagram():
         bezier_equidistant = util.equidistant(bezier)
 
         # Color map
-        norm        = Normalize(vmin=-1, vmax=1)
+        norm        = mtpl_colors.Normalize(vmin=-1, vmax=1)
         c1          = curve['c1'] # Color 1
         c2          = curve['c2'] # Color 2
         chord_cmap  = sns.blend_palette([c1,c1,c2,c2],as_cmap=True)

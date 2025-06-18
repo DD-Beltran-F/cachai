@@ -1,4 +1,5 @@
 # Imports
+import os
 import numpy as np
 import colorsys
 # Matplotlib imports
@@ -6,6 +7,13 @@ from matplotlib import pyplot as plt
 # Scipy imports
 from scipy.spatial.distance import cdist
 from scipy.interpolate import interp1d
+
+def save_func(fig_name='img',path='images',img_dpi=300,pdf_dpi=200,pdf=True):
+    if not os.path.exists(path): os.makedirs(path)
+    plt.savefig(os.path.join('images',f'{fig_name}.png'),bbox_inches='tight',pad_inches=0.3,dpi=img_dpi)
+    if pdf:
+        if not os.path.exists(os.path.join(path,'pdf')): os.makedirs(os.path.join(path,'pdf'))
+        plt.savefig(os.path.join('images','pdf',f'{fig_name}.pdf'),bbox_inches='tight',pad_inches=0.3,dpi=pdf_dpi)
 
 # f-string pre-defined colors
 fstr_colors = {'white':255,'black':232,'light_gray':245,'dark_gray':237,'gold':220,
