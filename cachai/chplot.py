@@ -7,6 +7,7 @@ from   matplotlib import pyplot as plt
 from   matplotlib.patches import Arc, Circle, PathPatch
 from   matplotlib.path import Path
 import matplotlib.colors as mtpl_colors
+from   matplotlib.text import Text
 
 
 class ChordDiagram():
@@ -61,14 +62,16 @@ class ChordDiagram():
             Hatch for negative correlated chords (default: '---')
         fontsize : int
             Label font size (default: 15)
-        fontdict : dict
+        font : dict or str
             Label font parameters (default: None)
         min_dist : float
             Minimum angle distance from which apply radius rule (default: 15 [degrees])
         max_rho_radius : float
             Maximum normalized radius of the chords relative to center (default: 0.7)
+        show_axis : bool
+            Whether to show the axis (default: True)
         rasterized : bool
-            Force rasterized (bitmap) drawing for vector graphics output (default: False)
+            Whether to force rasterized (bitmap) drawing for vector graphics output (default: False)
         """
         
         # Store parameters
@@ -113,9 +116,10 @@ class ChordDiagram():
             'positive_hatch'  : None,
             'negative_hatch'  : '---',
             'fontsize'        : 15,
-            'fontdict'        : None,
+            'font'            : None,
             'min_dist'        : np.deg2rad(15),
             'max_rho_radius'  : 0.7,
+            'show_axis'       : True,
             'rasterized'      : False,
         }
         defaults.update(kwargs)
@@ -125,7 +129,7 @@ class ChordDiagram():
         self.nodes = dict()
         self.order = [i for i in range(len(corr_matrix))]
         self.global_indexes = []
-        if self.fontdict is None: self.fontdict = {'size':self.fontsize}
+        if self.font is None: self.font = {'size':self.fontsize}
         
         # Initialize collections
         self.node_patches       = []
@@ -205,14 +209,17 @@ class ChordDiagram():
             # Add patches to axes
             for node_patch, node_label in zip(self.node_patches, self.node_labels_params):
                 self.ax.add_patch(node_patch)
-                label = self.ax.text(node_label['x'],
-                                     node_label['y'],
-                                     node_label['label'],
-                                     rotation=node_label['rot'],
-                                     ha='center', va='center',
-                                     rasterized=self.rasterized,
-                                     clip_on=True,
-                                     fontdict=self.fontdict)
+                label = PolarText(self.position,
+                                  node_label['r'],
+                                  node_label['theta'],
+                                  text=node_label['label'],
+                                  pad=self.node_labelpad,
+                                  rotation=node_label['rot'],
+                                  ha='center', va='center',
+                                  clip_on=True,
+                                  rasterized=self.rasterized)
+                label.set_font(self.font)
+                self.ax.add_artist(label)
                 self.node_labels.append(label)
             flat_chord_patches = [p for plist in self.chord_patches for p in plist]
             flat_bezier_curves = [c for clist in self.bezier_curves for c in clist]
@@ -220,6 +227,8 @@ class ChordDiagram():
                 self.ax.add_patch(chord_patch)
                 if self.blend:
                     self.__add_chord_blend(chord_patch,bezier_curve,self.global_indexes[k])
+            
+            self.__adjust_ax()
                 
     # Components generation methods
     def __generate_nodes(self):
@@ -315,11 +324,11 @@ class ChordDiagram():
             # Label
             params = dict()
             params['label'] = self.names[n]
-            params['r']     = self.radius + self.node_labelpad
+            params['r']     = self.radius
             params['theta'] = node['theta_m']
             params['x']     = params['r'] * np.cos(params['theta']) + self.position[0]
             params['y']     = params['r'] * np.sin(params['theta']) + self.position[1]
-            params['rot']   = np.rad2deg(node['theta_m'] - np.sign(params['y'])*np.pi/2)%360
+            params['rot']   = np.rad2deg(node['theta_m'] - np.sign(params['y']-self.position[1])*np.pi/2)%360
             self.node_labels_params.append(params)
         
     def __generate_chords(self):
@@ -499,6 +508,16 @@ class ChordDiagram():
                 rasterized=self.rasterized)
         )
     
+    def __adjust_ax(self):
+        adjust_x = self.ax.get_autoscalex_on()
+        adjust_y = self.ax.get_autoscaley_on()
+        if adjust_x:
+            self.ax.set_xlim(self.position[0] - self.radius*1.5,self.position[0] + self.radius*1.5)
+        if adjust_y:
+            self.ax.set_ylim(self.position[1] - self.radius*1.5,self.position[1] + self.radius*1.5)
+        if adjust_x and adjust_y: self.ax.set_aspect('equal')
+        if self.show_axis == False: self.ax.axis('off')
+    
     # Special methods 
     def __str__(self):
         string = ''
@@ -513,3 +532,69 @@ class ChordDiagram():
                     string += f'\n{key:<10} : {self.nodes[n][key]}'
             string += '\n\n\n'
         return string
+    
+
+class PolarText(Text):
+    def __init__(self, center, radius, angle, text='', pad=0.0, **kwargs):
+        """
+        Initialize a Text using polar coordinates.
+        
+        Parameters:
+        -----------
+        center : tuple
+            Center of the polar system
+        radius : float
+            Radius coordinate
+        theta : float
+            Angle coordinate in rad
+        text : str
+            Text to diplay (default: '')
+        pad : float
+            Label position adjustment (default: 0.0)
+        
+        Keyword Arguments:
+        -----------------
+        From the parent class Text
+        """
+        self.center  = np.array(center)
+        self._radius = radius
+        self._angle  = angle
+        self._pad    = pad
+        
+        x, y = self._polar_to_cartesian(radius*(1 + pad), angle)
+        
+        super().__init__(x, y, text, **kwargs)
+
+    def _polar_to_cartesian(self, radius, angle):
+        """Tranform polar (radius, angle) to catesian (x, y)."""
+        dx = radius * np.cos(angle)
+        dy = radius * np.sin(angle)
+        return self.center + np.array([dx, dy])
+    
+    def set_pad(self, pad):
+        """Update pad"""
+        self._pad = pad
+        x, y = self._polar_to_cartesian(self._radius*(1 + self._pad), self._angle)
+        self.set_position((x, y))
+    
+    def set_radius(self, radius):
+        """Update radius"""
+        self._radius = radius
+        x, y = self._polar_to_cartesian(self._radius*(1 + self._pad), self._angle)
+        self.set_position((x, y))
+
+    def set_angle(self, angle_deg):
+        """Update angle in deg"""
+        self._angle = np.deg2rad(angle_deg)
+        x, y = self._polar_to_cartesian(self._radius*(1 + self._pad), self._angle)
+        self.set_position((x, y))
+
+    def set_polar_position(self, radius=None, angle_deg=None):
+        """Update radius and/or angle"""
+        if radius is not None:
+            self._radius = radius
+        if angle_deg is not None:
+            self._angle = np.deg2rad(angle_deg)
+        x, y = self._polar_to_cartesian(self._radius*(1 + self._pad), self._angle)
+        self.set_position((x, y))
+    

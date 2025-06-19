@@ -103,6 +103,7 @@ def angspace(alpha,beta,n=200):
     """Generate a linear space of angles"""
     theta = abs(beta-alpha)
     ndots = int(theta*n/(2*np.pi))
+    if ndots == 1: ndots = 2
     return np.linspace(alpha,beta,ndots)
     
 def angdist(alpha,beta):
