@@ -70,6 +70,12 @@ class ChordDiagram():
             Maximum normalized radius of the chords relative to center (default: 0.7)
         show_axis : bool
             Whether to show the axis (default: True)
+        legend : bool
+            Adds default positive and negative labels in the legend (default: False)
+        positive_label : str
+            Adds positive label in the legend (default: None)
+        negative_label : str
+            Adds negative label in the legend (default: None)
         rasterized : bool
             Whether to force rasterized (bitmap) drawing for vector graphics output (default: False)
         """
@@ -120,6 +126,9 @@ class ChordDiagram():
             'min_dist'        : np.deg2rad(15),
             'max_rho_radius'  : 0.7,
             'show_axis'       : True,
+            'legend'          : False,
+            'positive_label'  : None,
+            'negative_label'  : None,
             'rasterized'      : False,
         }
         defaults.update(kwargs)
@@ -229,6 +238,7 @@ class ChordDiagram():
                     self.__add_chord_blend(chord_patch,bezier_curve,self.global_indexes[k])
             
             self.__adjust_ax()
+            self.__generate_legend()
                 
     # Components generation methods
     def __generate_nodes(self):
@@ -394,6 +404,23 @@ class ChordDiagram():
                         self.global_indexes.append(n)
                         
                     except Exception as e: self._print_msg(e)
+    
+    def __generate_legend(self):
+        """Add dummie labels to show in the legend"""
+        if self.legend is True:
+            if self.positive_label is None: self.positive_label = 'Positive\ncorrelation'
+            if self.negative_label is None: self.negative_label = 'Negative\ncorrelation'
+        # Dummies
+        if self.positive_label is not None:
+            dummy = self.ax.scatter(*self.position,marker='s',s=200,
+                                    c='lightgray',ec='k',hatch=self.positive_hatch,
+                                    label=self.positive_label,zorder=0,rasterized=True)
+            #dummy.set_visible(False)
+        if self.negative_label is not None:
+            dummy = self.ax.scatter(*self.position,marker='s',s=200,
+                                    c='lightgray',ec='k',hatch=self.negative_hatch,
+                                    label=self.negative_label,zorder=0,rasterized=True)
+            #dummy.set_visible(False)
     
     # Helper methods
     def __filter_nodes(self):
