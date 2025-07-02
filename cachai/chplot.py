@@ -69,7 +69,7 @@ class ChordDiagram():
         max_rho_radius : float
             Maximum normalized radius of the chords relative to center (default: 0.7)
         show_axis : bool
-            Whether to show the axis (default: True)
+            Whether to show the axis (default: False)
         legend : bool
             Adds default positive and negative labels in the legend (default: False)
         positive_label : str
@@ -125,7 +125,7 @@ class ChordDiagram():
             'font'            : None,
             'min_dist'        : np.deg2rad(15),
             'max_rho_radius'  : 0.7,
-            'show_axis'       : True,
+            'show_axis'       : False,
             'legend'          : False,
             'positive_label'  : None,
             'negative_label'  : None,

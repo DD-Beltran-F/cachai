@@ -8,6 +8,15 @@ from matplotlib import pyplot as plt
 from scipy.spatial.distance import cdist
 from scipy.interpolate import interp1d
 
+
+# Check if some variable can be int
+def is_int(var):
+    try:
+        var = int(var)
+        return True
+    except:
+        return False
+
 def save_func(fig_name='img',path='images',img_dpi=300,pdf_dpi=200,pdf=True):
     if not os.path.exists(path): os.makedirs(path)
     plt.savefig(os.path.join('images',f'{fig_name}.png'),bbox_inches='tight',pad_inches=0.3,dpi=img_dpi)
