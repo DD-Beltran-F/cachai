@@ -1,8 +1,8 @@
 *🤔LOGO📊*
 
-# **CACHAi package**
+# **CACHAI package**
 
-CACHAi (Custom Axes and Charts) is a customizable visualization toolkit for Python.
+CACHAI (Custom Axes and CHarts Advanced Interface) is a customizable visualization toolkit for Python.
 
 ## ⚙️ Installation
 
