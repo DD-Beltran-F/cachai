@@ -3,6 +3,7 @@ __pycache__/
 .pytest_cache/
 *.pyc
 dist/
+build/
 *.egg-info/
 
 # Jupyter/IPython
