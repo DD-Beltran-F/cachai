@@ -88,7 +88,7 @@ class ChordDiagram():
         self.corr_matrix = corr_matrix
         if len(self.corr_matrix) == 0:
             raise Exception('Your correlation matrix is empty')
-        self.names = names or [f'Node {i+1}' for i in range(len(corr_matrix))]
+        self.names = names or [f'N{i+1}' for i in range(len(corr_matrix))]
         self.ax = ax or plt.gca()
         
         aliases = {'radius'          : 'r',
