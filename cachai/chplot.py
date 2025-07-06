@@ -66,6 +66,10 @@ class ChordDiagram():
             Label font parameters (default: None)
         min_dist : float
             Minimum angle distance from which apply radius rule (default: 15 [degrees])
+        scale : str
+            Scale use to set chord's thickness, wheter "linear" or "log" (default: "linear")
+        max_rho : float
+            Maximum chord's thickness (default: 0.4) 
         max_rho_radius : float
             Maximum normalized radius of the chords relative to center (default: 0.7)
         show_axis : bool
@@ -124,6 +128,8 @@ class ChordDiagram():
             'fontsize'        : 15,
             'font'            : None,
             'min_dist'        : np.deg2rad(15),
+            'scale'           : 'linear',
+            'max_rho'         : 0.4,
             'max_rho_radius'  : 0.7,
             'show_axis'       : False,
             'legend'          : False,
@@ -194,6 +200,17 @@ class ChordDiagram():
             return self.max_rho_radius
         else:
             return self.max_rho_radius * (1 - (dist - self.min_dist) / (np.pi - self.min_dist))
+    
+    def _scale_rho(self, rho):
+        """Scale rho (link thickness)"""
+        if self.scale == 'linear':
+            rho_lin = np.abs(rho) * self.max_rho
+            return np.clip(rho_lin, 0, 1) # Clip to avoid numerical issues
+        elif self.scale == 'log':
+            rho_log = (1 - np.log10(10 - 9*np.abs(rho))) * self.max_rho
+            return np.clip(rho_log, 0, 1) # Clip to avoid numerical issues
+        else:
+            raise ValueError(f'Unknown scale type {self.scale}')
     
     @staticmethod
     def _print_msg(msg,color='red'):
@@ -356,7 +373,7 @@ class ChordDiagram():
                 points,codes,curve = self.__compute_bezier_curves(
                                          (node['ports'][n]['i'],node['ports'][n]['f']),
                                          (node['ports'][f'{n}*']['i'],node['ports'][f'{n}*']['f']),
-                                         0.3
+                                         self._scale_rho(1)
                                      )
 
                 self.chord_patches[n].append(
@@ -377,15 +394,16 @@ class ChordDiagram():
             for m in self.nodes:
                 if m > n and node['ports_state'][m] > 0:
                     try:
-                        target = self.nodes[m]
-                        this_rho = node['rhos'][m]/2.5
-                        hatch = self.positive_hatch
+                        target   = self.nodes[m]
+                        this_rho = node['rhos'][m]
+                        vis_rho  = self._scale_rho(this_rho)
+                        hatch    = self.positive_hatch
                         if this_rho < 0: hatch = self.negative_hatch
                         
                         points,codes,curve = self.__compute_bezier_curves(
                                          (node['ports'][m]['i'],node['ports'][m]['f']),
                                          (target['ports'][n]['i'],target['ports'][n]['f']),
-                                         np.abs(this_rho)
+                                         vis_rho
                                      )
 
                         self.chord_patches[n].append(

@@ -21,3 +21,6 @@ images/
 *.png
 *.pdf
 *.log
+
+# Development files
+*_dev.*
