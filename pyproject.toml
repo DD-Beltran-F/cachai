@@ -1,21 +1,31 @@
 [build-system]
-requires = ["setuptools>=42"]
+requires = ["setuptools>=75.8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "cachai"
 version = "0.1.0"
 authors = [
-    {name = "Diego Beltrán Flores", email = "d.beltran@outlook.cl"},
+    {name="Diego Beltrán Flores", email="d.beltran@outlook.cl"},
 ]
-description = "Customizable visualization toolkit for Python."
+description = "Customizable visualization toolkit for Python"
 readme = "README.md"
-requires-python = ">=3.8"
-license = {text = "MIT"}
+requires-python = ">=3.10.6"
+license = "GPL-3.0-or-later"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "matplotlib>=3.8.2",
+    "numpy>=1.23.2",
+    "pandas>=2.1.1",
+    "seaborn>=0.13.2",
+    "scipy>=1.10.1",
 ]
 
 [project.urls]
 Homepage = "https://github.com/DD-Beltran-F/cachai"
+Repository = "https://github.com/DD-Beltran-F/cachai"
+Issues = "https://github.com/DD-Beltran-F/cachai/issues"
