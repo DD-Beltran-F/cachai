@@ -1,4 +1,4 @@
-*🤔LOGO📊*
+**🤔LOGO📊**
 
 # **CACHAI package**
 
@@ -6,6 +6,11 @@ CACHAI (Custom Axes and CHarts Advanced Interface) is a customizable visualizati
 
 ## ⚙️ Installation
 
+(NOTE: This is a testing version)
+
+```bash
+pip install -i https://test.pypi.org/simple/ cachai
+```
 
 ## 📦 Requirements
 
@@ -19,12 +24,9 @@ pip install matplotlib numpy pandas seaborn scipy
 
 Tested with:
 
-- Python $\geq$ 3.10.6 
-- matplotlib $\geq$ 3.8.2
-- numpy $\geq$ 1.23.2
-- pandas $\geq$ 2.1.1
-- seaborn $\geq$ 0.13.2
-- scipy $\geq$ 1.10.1
-
-
-
+- Python >= 3.10.12 
+- matplotlib >= 3.10.3
+- numpy >= 2.2.6
+- pandas >= 2.3.0
+- seaborn >= 0.13.2
+- scipy >= 1.15.3

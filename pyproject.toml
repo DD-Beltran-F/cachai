@@ -4,24 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cachai"
-version = "0.1.0"
+version = "0.2.0"
 authors = [
     {name="Diego Beltrán Flores", email="d.beltran@outlook.cl"},
 ]
 description = "Customizable visualization toolkit for Python"
 readme = "README.md"
-requires-python = ">=3.10.6"
+requires-python = ">=3.10.12"
 license = "GPL-3.0-or-later"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "matplotlib>=3.8.2",
-    "numpy>=1.23.2",
-    "pandas>=2.1.1",
+    "matplotlib>=3.10.3",
+    "numpy>=2.2.6",
+    "pandas>=2.3.0",
     "seaborn>=0.13.2",
-    "scipy>=1.10.1",
+    "scipy>=1.15.3",
 ]
 
 [project.urls]
