@@ -18,6 +18,7 @@ venv/
 
 # Outputs
 images/
+*.ecsv
 *.csv
 *.png
 *.pdf

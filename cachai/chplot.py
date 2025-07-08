@@ -11,7 +11,7 @@ from   matplotlib.text import Text
 
 
 class ChordDiagram():
-    def __init__(self, corr_matrix, names=None, ax=None, **kwargs):
+    def __init__(self, corr_matrix, **kwargs):
         """
         Initialize a ChordDiagram visualization.
         
@@ -19,13 +19,13 @@ class ChordDiagram():
         -----------
         corr_matrix : ndarray
             Correlation matrix for the chord diagram
-        names : list
-            Names for each node
-        ax : matplotlib.axes.Axes, optional
-            Axes to plot on (creates new one if None)
         
         Keyword Arguments:
         -----------------
+        names : list
+            Names for each node (default: 'Ni' for th i-th node)
+        ax : matplotlib.axes.Axes, optional
+            Axes to plot on (default: current pyplot axis)
         radius / r : float
             Radius of the diagram (default: 1.0)
         position / p : tuple
@@ -84,13 +84,11 @@ class ChordDiagram():
             Whether to force rasterized (bitmap) drawing for vector graphics output (default: False)
         """
         
-        # Store parameters
+        # Correlation matrix error handling
         self.corr_matrix = corr_matrix
-        if len(self.corr_matrix) == 0:
-            raise Exception('Your correlation matrix is empty')
-        self.names = names or [f'N{i+1}' for i in range(len(corr_matrix))]
-        self.ax = ax or plt.gca()
-        
+        self._validate_corr_matrix()
+
+        # Alternative kwargs aliases
         aliases = {'radius'          : 'r',
                    'position'        : 'p',
                    'threshold'       : 'th',
@@ -106,8 +104,10 @@ class ChordDiagram():
             if aliases[param] in kwargs and param not in kwargs:
                 kwargs[param] = kwargs.pop(aliases[param])
         
-        # Set defaults and update with kwargs
+        # Set defaults
         defaults = {
+            'names'           : [f'N{i+1}' for i in range(len(corr_matrix))],
+            'ax'              : plt.gca(),
             'radius'          : 1,
             'position'        : (0,0),
             'optimize'        : True,
@@ -137,8 +137,15 @@ class ChordDiagram():
             'negative_label'  : None,
             'rasterized'      : False,
         }
+        
+        # Check for wrong kwargs
+        for key in kwargs:
+            if key not in defaults:
+                raise KeyError(f'Invalid argument "{key}". Allowed kwargs are: {", ".join(defaults.keys())}.')
+        
         defaults.update(kwargs)
         self.__dict__.update(defaults)
+
         
         # Initialize additional variables
         self.nodes = dict()
@@ -159,6 +166,27 @@ class ChordDiagram():
     
     
     # Util methods
+    def _validate_corr_matrix(self):
+        """Validate that a correlation matrix meets the required specifications:
+            - Input is a numpy.ndarray
+            - Matrix is 2-dimensional
+            - Matrix is not empty
+            - All values are int or float
+            - Matrix is symmetric
+        """
+        if not isinstance(self.corr_matrix, np.ndarray):
+            raise TypeError('Your correlation matrix must be a numpy.ndarray')
+        if self.corr_matrix.ndim != 2:
+            raise ValueError('Your correlation matrix must be a 2-dimensional array')
+        if self.corr_matrix.shape[0] != self.corr_matrix.shape[1]:
+            raise ValueError('Your correlation matrix must be a square matrix.')
+        if len(self.corr_matrix) == 0:
+            raise ValueError('Your correlation matrix cannot be empty')
+        if not np.issubdtype(self.corr_matrix.dtype, np.floating):
+            raise TypeError('Your correlation matrix must contain float values')
+        if not np.allclose(self.corr_matrix, self.corr_matrix.T):
+            raise ValueError('Your correlation matrix must be symmetric')
+        
     def _optimize_nodes(self):
         """Optimize node order using Prim's algorithm."""
         n_nodes = self.corr_matrix.shape[0]
@@ -212,10 +240,6 @@ class ChordDiagram():
         else:
             raise ValueError(f'Unknown scale type {self.scale}')
     
-    @staticmethod
-    def _print_msg(msg,color='red'):
-        print(util.textco(f'ChordDiagram: {msg}',c=color))
-    
     # Main generation methods
     def __generate_diagram(self):
         """Generate the complete chord diagram"""
@@ -226,7 +250,7 @@ class ChordDiagram():
         if self.filter == True: self.__filter_nodes()
         
         if len(self.corr_matrix) == 0:
-            self._print_msg(f'No variables left. All correlations are below threshold = {self.threshold}')
+            raise ValueError(f'No nodes remaining after threshold filtering: all correlations were below the threshold = {self.threshold}.')
         else:
             if self.optimize == True: self._optimize_nodes()
             self.__generate_nodes()
@@ -421,7 +445,11 @@ class ChordDiagram():
                         self.bezier_curves[n].append(curve)
                         self.global_indexes.append(n)
                         
-                    except Exception as e: self._print_msg(e)
+                    except Exception as e:
+                        print(util.textco(rf'ChordError: Problem creating chord from {self.names[m]} to {self.names[n]}.',
+                                          c='red'))
+                        print(util.textco(f'            details: {e}',
+                                          c='red'))
     
     def __generate_legend(self):
         """Add dummie labels to show in the legend"""
