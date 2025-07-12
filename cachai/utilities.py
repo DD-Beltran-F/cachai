@@ -3,21 +3,29 @@ import os
 import numpy as np
 import colorsys
 # Matplotlib imports
-from matplotlib import pyplot as plt
+from   matplotlib import pyplot as plt
 # Scipy imports
-from scipy.spatial.distance import cdist
-from scipy.interpolate import interp1d
+from   scipy.spatial.distance import cdist
+from   scipy.interpolate import interp1d
 
 
-# Check if some variable can be int
-def is_int(var):
-    try:
-        var = int(var)
-        return True
-    except:
-        return False
+def kwargs_as_string(params,aliases):
+    """Format arguments into string separated by ,"""
+    keys = list(params.keys())
+    for i,key in enumerate(params):
+        if key in aliases.keys(): keys[i] = f'{key} / {aliases[key]}'
+    return ', '.join(keys)
+
+def validate_kwargs(params,kwargs,aliases={}):
+    """Check for wrong kwargs"""
+    for key in kwargs:
+        if key not in params:
+            raise KeyError(
+            f'Invalid argument "{key}". Allowed arguments are: {kwargs_as_string(params,aliases)}.'
+            )
 
 def save_func(fig_name='img',path='images',img_dpi=300,pdf_dpi=200,pdf=True):
+    """Save plot as png/pdf"""
     if not os.path.exists(path): os.makedirs(path)
     plt.savefig(os.path.join('images',f'{fig_name}.png'),bbox_inches='tight',pad_inches=0.3,dpi=img_dpi)
     if pdf:
@@ -28,16 +36,16 @@ def save_func(fig_name='img',path='images',img_dpi=300,pdf_dpi=200,pdf=True):
 fstr_colors = {'white':255,'black':232,'light_gray':245,'dark_gray':237,'gold':220,
                'red':196,'blue':21,'green':118,'magenta':165,'mint':87,'orange':202}
 
-# Print the pyhton color palette (256) for strings
 def color_palette():
+    """Print the pyhton color palette (256) for strings"""
     for i in range(16):
         for j in range(16):
             print(textco('■',c=i+j*16) + f' {str(i+j*16):<3.3}  ',end='')
         print()
 
-# Function to add color to prints
 def textco(text,c='white'):
-    if is_int(c):
+    """Add color to prints"""
+    if isinstance(c,int):
         return f'\033[38;5;{c}m{text}\033[0m'
     else:
         try:
@@ -46,27 +54,27 @@ def textco(text,c='white'):
             c = 'white'
         return f'\033[38;5;{fstr_colors[c]}m{text}\033[0m'
 
-# Convert color from rgb to hsl
 def rgb_to_hsl(rgb):
+    """Convert color from rgb to hsl"""
     r,g,b = rgb
     h,l,s = colorsys.rgb_to_hls(r,g,b)
     return (h,s,l)
 
-# Convert color from hsl to rgb 
 def hsl_to_rgb(hsl):
+    """Convert color from hsl to rgb"""
     h,s,l = hsl
     r,g,b = colorsys.hls_to_rgb(h, l, s)
     return (r,g,b)
 
-# Saturation
 def saturate_color(color,factor=1):
+    """Change saturation of RGB color"""
     h,s,l = rgb_to_hsl(color)
     s_new = max(0, min(1,s*factor))
     r,g,b = hsl_to_rgb((h,s_new,l))
     return (r,g,b)
 
-# Alpha
 def alpha_color(color, alpha=1, bg=(1,1,1)):
+    """Change alpha of RGB color"""
     r,g,b = color
     bg_r,bg_g,bg_b = bg
     factor = max(0, min(1, alpha))
@@ -75,8 +83,8 @@ def alpha_color(color, alpha=1, bg=(1,1,1)):
     b_result = (b*factor) + (bg_b*(1-factor))
     return (r_result,g_result,b_result)
 
-# Lighter color
 def lighter_color(color,p=0.1):
+    """Lighter RGB color"""
     r,g,b = color
     factor = max(0, factor)
     r = min(1, r + (1-r)*factor)
@@ -84,8 +92,8 @@ def lighter_color(color,p=0.1):
     b = min(1, b + (1-b)*factor)
     return (r,g,b)
 
-# Darker color
 def darker_color(color,factor=0.1):
+    """Darker RGB color"""
     r,g,b = color
     factor = 1 - (max(0,factor))
     r = max(0, r*factor)
@@ -93,8 +101,8 @@ def darker_color(color,factor=0.1):
     b = max(0, b*factor)
     return (r,g,b)
 
-# Modify color
 def mod_color(color,light=1,sat=1,alpha=1,alpha_bg=(1,1,1)):
+    """Modify RGB color"""
     new_color = color
     # Light
     if light > 1:
