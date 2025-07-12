@@ -9,13 +9,13 @@ CACHAI (Custom Axes and CHarts Advanced Interface) is a customizable visualizati
 (**NOTE**: This is a testing version)
 
 ```bash
-pip install -i https://test.pypi.org/simple/ cachai==0.2.0
+pip install -i https://test.pypi.org/simple/ cachai==0.3.1
 ```
 
 In case you have problems with the dependencies, try:
 
 ```bash
-pip install -i https://test.pypi.org/simple/ --no-deps cachai==0.2.0
+pip install -i https://test.pypi.org/simple/ --no-deps cachai==0.3.1
 ```
 
 ## 📦 Requirements

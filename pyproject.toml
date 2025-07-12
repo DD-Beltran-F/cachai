@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cachai"
-version = "0.2.0"
+version = "0.3.1"
 authors = [
     {name="Diego Beltrán Flores", email="d.beltran@outlook.cl"},
 ]
