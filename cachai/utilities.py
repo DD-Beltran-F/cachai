@@ -27,10 +27,10 @@ def validate_kwargs(params,kwargs,aliases={}):
 def save_func(fig_name='img',path='images',img_dpi=300,pdf_dpi=200,pdf=True):
     """Save plot as png/pdf"""
     if not os.path.exists(path): os.makedirs(path)
-    plt.savefig(os.path.join('images',f'{fig_name}.png'),bbox_inches='tight',pad_inches=0.3,dpi=img_dpi)
+    plt.savefig(os.path.join(path,f'{fig_name}.png'),bbox_inches='tight',pad_inches=0.3,dpi=img_dpi)
     if pdf:
         if not os.path.exists(os.path.join(path,'pdf')): os.makedirs(os.path.join(path,'pdf'))
-        plt.savefig(os.path.join('images','pdf',f'{fig_name}.pdf'),bbox_inches='tight',pad_inches=0.3,dpi=pdf_dpi)
+        plt.savefig(os.path.join(path,'pdf',f'{fig_name}.pdf'),bbox_inches='tight',pad_inches=0.3,dpi=pdf_dpi)
 
 # f-string pre-defined colors
 fstr_colors = {'white':255,'black':232,'light_gray':245,'dark_gray':237,'gold':220,
@@ -83,7 +83,7 @@ def alpha_color(color, alpha=1, bg=(1,1,1)):
     b_result = (b*factor) + (bg_b*(1-factor))
     return (r_result,g_result,b_result)
 
-def lighter_color(color,p=0.1):
+def lighter_color(color,factor=0.1):
     """Lighter RGB color"""
     r,g,b = color
     factor = max(0, factor)

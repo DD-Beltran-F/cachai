@@ -1,15 +1,16 @@
 # Basic imports
 import numpy as np
+import pandas as pd
 from   typing import Any
 from   numpy.typing import ArrayLike
-from   cachai import charts
+from   cachai.chord import ChordDiagram
 from   cachai import utilities as util
 # Matplotlib imports
 from   matplotlib import pyplot as plt
 from   matplotlib.axes import Axes
 
 def chord(
-    corr_matrix      : np.ndarray,
+    corr_matrix      : np.ndarray | pd.DataFrame,
     names            : ArrayLike = None,
     colors           : ArrayLike = None,
     *,
@@ -28,6 +29,7 @@ def chord(
     blend_resolution : int = 200,
     chord_linewidth  : float = 1,
     chord_alpha      : float = 0.7,
+    off_alpha        : float = 0.1,
     positive_hatch   : str = None,
     negative_hatch   : str = '---',
     fontsize         : int = 15,
@@ -42,13 +44,13 @@ def chord(
     negative_label   : str = None,
     rasterized       : bool = False,
     **kwargs         : Any,
-    ) -> charts.ChordDiagram:
+    ) -> ChordDiagram:
     """
     Create and return a ChordDiagram visualization.
     
     Parameters:
     -----------
-    corr_matrix : ndarray
+    corr_matrix : numpy.ndarray or pandas.DataFrame
         Correlation matrix for the chord diagram
     names / n : list
         Names for each node (default: 'Ni' for the i-th node)
@@ -84,6 +86,8 @@ def chord(
         Line width for chords (default: 1)
     chord_alpha / calpha : float
         Alpha of the facecolor for chords (default: 0.7)
+    off_alpha : float
+        Alpha for non-highlighted chords (default: 0.1)
     positive_hatch : str
         Hatch for positive correlated chords (default: None)
     negative_hatch : str
@@ -136,6 +140,7 @@ def chord(
         'blend_resolution' : blend_resolution,
         'chord_linewidth'  : chord_linewidth,
         'chord_alpha'      : chord_alpha,
+        'off_alpha'        : off_alpha,
         'positive_hatch'   : positive_hatch,
         'negative_hatch'   : negative_hatch,
         'fontsize'         : fontsize,
@@ -170,6 +175,6 @@ def chord(
     # Check for wrong kwargs
     util.validate_kwargs(params,kwargs,aliases)
 
-    return charts.ChordDiagram(**params)
+    return ChordDiagram(**params)
 
     

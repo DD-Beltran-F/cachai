@@ -1,5 +1,6 @@
 # Basic imports
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from   cachai import utilities as util
 from   cachai import gadgets
@@ -22,6 +23,9 @@ class ChordDiagram():
         
         # Initialize additional parameters
         self.__dict__.update(kwargs)
+        if isinstance(self.corr_matrix, pd.DataFrame):
+            if self.names is None: self.names = self.corr_matrix.columns.tolist()
+            self.corr_matrix = self.corr_matrix.to_numpy()
         if self.names is None: self.names = [f'N{i+1}' for i in range(len(self.corr_matrix))]
         if self.colors is None: self.colors = sns.hls_palette(len(self.corr_matrix))
         self.nodes = dict()
@@ -30,12 +34,14 @@ class ChordDiagram():
         if self.font is None: self.font = {'size':self.fontsize}
         
         # Initialize collection lists
-        self.node_patches       = []
-        self.node_labels        = []
-        self.node_labels_params = []
-        self.chord_patches      = [[] for i in range(len(self.corr_matrix))]
-        self.chord_blends       = [[] for i in range(len(self.corr_matrix))]
-        self.bezier_curves      = [[] for i in range(len(self.corr_matrix))]
+        self.node_patches        = []
+        self.node_labels         = []
+        self.node_labels_params  = []
+        self.chord_patches       = [[] for i in range(len(self.corr_matrix))]
+        self.chord_blends        = [[] for i in range(len(self.corr_matrix))]
+        self.bezier_curves       = [[] for i in range(len(self.corr_matrix))]
+        self.__ports_refs        = []
+        self.__highlighted_ports = []
         
         # Generate the diagram
         self.__generate_diagram()
@@ -44,23 +50,28 @@ class ChordDiagram():
     # Util methods
     def _validate_corr_matrix(self):
         """Validate that a correlation matrix meets the required specifications:
-            - Input is a numpy.ndarray
+            - Input is a numpy.ndarray or pandas.DataFrame
             - Matrix is 2-dimensional
             - Matrix is not empty
             - All values are int or float
             - Matrix is symmetric
         """
-        if not isinstance(self.corr_matrix, np.ndarray):
-            raise TypeError('Your correlation matrix must be a numpy.ndarray')
-        if self.corr_matrix.ndim != 2:
+        temp_corr_matrix = self.corr_matrix
+        if not isinstance(temp_corr_matrix, (np.ndarray, pd.DataFrame)):
+            raise TypeError('Your correlation matrix must be a numpy.ndarray or pandas.DataFrame')
+        # -- This block of code should not be here, but its necessary for the next validations --
+        if isinstance(temp_corr_matrix, pd.DataFrame):
+            temp_corr_matrix = self.corr_matrix.to_numpy()
+        # ---------------------------------------------------------------------------------------
+        if temp_corr_matrix.ndim != 2:
             raise ValueError('Your correlation matrix must be a 2-dimensional array')
-        if self.corr_matrix.shape[0] != self.corr_matrix.shape[1]:
+        if temp_corr_matrix.shape[0] != temp_corr_matrix.shape[1]:
             raise ValueError('Your correlation matrix must be a square matrix.')
-        if len(self.corr_matrix) == 0:
+        if len(temp_corr_matrix) == 0:
             raise ValueError('Your correlation matrix cannot be empty')
-        if not np.issubdtype(self.corr_matrix.dtype, np.floating):
+        if not np.issubdtype(temp_corr_matrix.dtype, np.floating):
             raise TypeError('Your correlation matrix must contain float values')
-        if not np.allclose(self.corr_matrix, self.corr_matrix.T):
+        if not np.allclose(temp_corr_matrix, temp_corr_matrix.T):
             raise ValueError('Your correlation matrix must be symmetric')
         
     def _optimize_nodes(self):
@@ -90,7 +101,7 @@ class ChordDiagram():
                         min_dist = distance_matrix[node, neighbor]
                         next_node = neighbor
             if next_node == -1:
-                break  # Just in case we have disconnected nodes
+                break  # Just in case somehow we have disconnected nodes
             visited.add(next_node)
             order.append(next_node)
 
@@ -99,7 +110,7 @@ class ChordDiagram():
         self.__order_nodes()
     
     def _radius_rule(self, dist):
-        """Rule to set the radius of a chord"""
+        """Rule to set the radius of a single chord"""
         if dist <= self.min_dist:
             return self.max_rho_radius
         else:
@@ -126,7 +137,8 @@ class ChordDiagram():
         if self.filter == True: self.__filter_nodes()
         
         if len(self.corr_matrix) == 0:
-            raise ValueError(f'No nodes remaining after threshold filtering: all correlations were below the threshold = {self.threshold}.')
+            raise ValueError(f'No nodes remaining after threshold filtering: '
+                f'all correlations were below the threshold = {self.threshold}.')
         else:
             if self.optimize == True: self._optimize_nodes()
             self.__generate_nodes()
@@ -156,6 +168,7 @@ class ChordDiagram():
             
             self.__adjust_ax()
             self.__generate_legend()
+            self.__generate_port_refs()
                 
     # Components generation methods
     def __generate_nodes(self):
@@ -201,7 +214,7 @@ class ChordDiagram():
             # -1 = Forbidden
             node_ports_state = [1 for p in range(len(corr))]
             for p,r in enumerate(corr):
-                if np.abs(r) <= self.threshold:
+                if np.abs(r) < self.threshold:
                     node_ports_state[p] = -1
                     real_corr[p]        = 0
             if not self.show_diag:
@@ -299,7 +312,7 @@ class ChordDiagram():
                         vis_rho  = self._scale_rho(this_rho)
                         hatch    = self.positive_hatch
                         if this_rho < 0: hatch = self.negative_hatch
-                        
+
                         points,codes,curve = self.__compute_bezier_curves(
                                          (node['ports'][m]['i'],node['ports'][m]['f']),
                                          (target['ports'][n]['i'],target['ports'][n]['f']),
@@ -322,7 +335,7 @@ class ChordDiagram():
                         self.global_indexes.append(n)
                         
                     except Exception as e:
-                        print(util.textco(rf'ChordError: Problem creating chord from {self.names[m]} to {self.names[n]}.',
+                        print(util.textco(rf'ChordError: Problem creating chord from {self.names[n]} to {self.names[m]}.',
                                           c='red'))
                         print(util.textco(f'            details: {e}',
                                           c='red'))
@@ -344,6 +357,10 @@ class ChordDiagram():
                                     label=self.negative_label,zorder=0,rasterized=True)
             #dummy.set_visible(False)
     
+    def __generate_port_refs(self):
+        for n in self.nodes:
+            self.__ports_refs.append(self.__get_node_ports_references(n))
+
     # Helper methods
     def __filter_nodes(self):
         """Remove nodes with no correlation (0 chords)"""
@@ -365,12 +382,14 @@ class ChordDiagram():
         """Compute bezier curves to modelate a chord"""
         # Polar
         alpha_i, alpha_f = alpha
-        alpha_m = (alpha_f + alpha_i) / 2
-        alphas = util.angspace(alpha_i, alpha_f)
+        alpha_m = np.mean([alpha_f,alpha_i])
+        alphas = util.angspace(alpha_i,alpha_f)
+        if len(alphas) == 0: alphas = np.array([alpha_i,alpha_f]) # Case: angdist too short
 
         beta_i, beta_f = beta
-        beta_m = (beta_f + beta_i) / 2
-        betas = util.angspace(beta_i, beta_f)
+        beta_m = np.mean([beta_f,beta_i])
+        betas = util.angspace(beta_i,beta_f)
+        if len(betas) == 0: betas = np.array([beta_i,beta_f]) # Case: angdist too short
 
         dist = util.angdist(alpha_m, beta_m)
         r_rho = self._radius_rule(dist) * self.radius
@@ -423,10 +442,11 @@ class ChordDiagram():
                 [Path.CURVE3] * 2 + \
                 [Path.LINETO] * (len(points_B) - 1) + \
                 [Path.CURVE3] * 2
-        
+
         return points,codes,mid_bezier
     
     def __add_chord_blend(self,patch,curve,n):
+        """Add color mapped patches using the initial and final colors"""
         # Pach vertices
         vertices = patch.get_path().vertices
         xmin, ymin = np.min(vertices, axis=0)
@@ -458,6 +478,7 @@ class ChordDiagram():
         )
     
     def __adjust_ax(self):
+        """Adjust scale, limits, and visibility of the axis"""
         adjust_x = self.ax.get_autoscalex_on()
         adjust_y = self.ax.get_autoscaley_on()
         if adjust_x:
@@ -467,6 +488,94 @@ class ChordDiagram():
         if adjust_x and adjust_y: self.ax.set_aspect('equal')
         if self.show_axis == False: self.ax.axis('off')
     
+    def __get_node_ports(self,n):
+        """Return the occupied ports of the n-th node"""
+        this_items = list(self.nodes[n]['ports_state'].items())
+        this_items.pop(n+1)
+        return [p for p, s in this_items if s > 0 and p > n]
+
+    def __get_node_ports_references(self,n):
+        """
+        Return the reference of the chords of the n-th node as (n,c), where:
+
+        - n: index of the n-th node in the resulting diagram
+        - c: index of the c-th chord in the n-th node
+
+        Always anti-clockwise. When show_diag=True, the self-referencing chord is (n,0).
+        """
+        node       = self.nodes[n]
+        this_ports = self.__get_node_ports(n)
+        refs       = []
+        for port in node['ports_state'].keys():
+            if '*' not in str(port):
+                if node['ports_state'][port] > 0 and port > n:
+                    refs.append((n,this_ports.index(port)))
+                elif node['ports_state'][port] > 0 and port < n:
+                    target_ports = self.__get_node_ports(port)
+                    refs.append((port,target_ports.index(n)))
+        if self.show_diag:
+            diag_ref_position = None
+            refs_modified = []
+            for i, (x, y) in enumerate(refs):
+                modified = (x, y + 1)
+                refs_modified.append(modified)
+                if diag_ref_position is None and x == n: diag_ref_position = i   
+            if diag_ref_position is None: diag_ref_position = len(refs_modified)
+            refs_modified.insert(diag_ref_position, (n, 0))
+            refs = refs_modified
+        return refs
+
+    def __update_highlights(self):
+        for n in self.nodes:
+            for c in range(len(self.chord_patches[n])):
+                if (n,c) not in self.__highlighted_ports:
+                    self.chord_patches[n][c].set_alpha(self.off_alpha)
+                    if self.blend == True: self.chord_blends[n][c].set_alpha(self.off_alpha)
+
+    # Customization methods
+    def highlight_node(self,node:int,chords:list=None,alpha:float=None):
+        """
+        Targeted highlighting of the n-th node
+        You can also select the chords that you want to highlight using chords = [0,1,...]
+        """
+        if node >= len(self.nodes):
+            raise IndexError('Node is out of range. '
+                f'This Chord Diagram has only {len(self.nodes)} nodes.')
+        if node < 0 :
+            raise ValueError('The input node must be positive or zero.')
+
+        if chords is None: chords = [c for c in range(len(self.__ports_refs[node]))]
+        for chord in chords:
+            self.highlight_chord(node,chord,alpha)
+
+    def highlight_chord(self,node:int,chord:int,alpha:float=None):
+        """Targeted highlighting of the c-th chord in the n-th node"""
+        if node >= len(self.nodes):
+            raise IndexError('Node is out of range. '
+                f'This Chord Diagram has only {len(self.nodes)} nodes.')
+        if node < 0 or chord < 0:
+            raise ValueError('The input node and chord must be positive or zero.')
+
+        if alpha is None: alpha = self.chord_alpha
+        if alpha <= self.off_alpha: alpha = 0.8
+
+        self.__update_highlights()
+
+        try:
+            n,c = self.__ports_refs[node][chord]
+            self.chord_patches[n][c].set_alpha(alpha)
+            if self.blend == True: self.chord_blends[n][c].set_alpha(alpha)
+            if (n,c) not in self.__highlighted_ports: self.__highlighted_ports.append((n,c))
+        except IndexError:
+            raise IndexError(f'Chord {chord} is out of range. '
+                    f'Node {node} has only {len(self.__ports_refs[node])} chords.')
+
+    def set_chord_alpha(self,alpha):
+        for n in self.nodes:
+            for cp in self.chord_patches[n]: cp.set_alpha(alpha)
+            if self.blend == True:
+                for cb in self.chord_blends[n]: cb.set_alpha(alpha)
+
     # Special methods 
     def __str__(self):
         string = ''

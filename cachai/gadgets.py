@@ -58,11 +58,19 @@ class PolarText(Text):
         x, y = self._polar_to_cartesian(self._radius*(1 + self._pad), self._angle)
         self.set_position((x, y))
 
-    def set_polar_position(self, radius=None, angle_deg=None):
-        """Update radius and/or angle"""
+    def set_center(self, center):
+        """Update the center coordinates"""
+        self.center = np.array(center)
+        x, y = self._polar_to_cartesian(self._radius*(1 + self._pad), self._angle)
+        self.set_position((x, y))
+
+    def set_polar_position(self, radius=None, angle_deg=None, center=None):
+        """Update radius, angle and/or center"""
         if radius is not None:
             self._radius = radius
         if angle_deg is not None:
             self._angle = np.deg2rad(angle_deg)
+        if center is not None:
+            self.center = np.array(center)
         x, y = self._polar_to_cartesian(self._radius*(1 + self._pad), self._angle)
         self.set_position((x, y))
