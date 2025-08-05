@@ -386,3 +386,8 @@ Returns the list of available tests
 ## Utilities (`cachai.utilities`)
 
 The `utilities` module contains supporting tools primarily designed for internal use, though some functions may be useful in other contexts.
+
+> **Work in Progress**
+> 
+> :construction:  _Documentation under construction_ :construction:
+> This section is currently being developed. Check back soon for updates!
