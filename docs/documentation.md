@@ -12,7 +12,6 @@ The code documentation and installation guide are currently consolidated in this
 > **Fun fact:**
 >
 > "Cachai" (/kɑːˈtʃaɪ/) is a slang word from Chilean informal speech, similar to saying "ya know?" or "get it?" in English.
->
 > Don't know how to pronunce it? Think of "kah-CHAI" (like "cut" + "chai" tea, with stress on "CHAI").
 
 # :gear: Installation guide
