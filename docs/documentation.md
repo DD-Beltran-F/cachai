@@ -122,5 +122,228 @@ Create and return a `ChordDiagram` visualization. In science high-dimensional da
 > **Parameters:**
 
 `corr_matrix` : `numpy.ndarray` or `pandas.DataFrame`
-<p style="padding-left: 20px;">Correlation matrix for the chord diagram. This matrix has to be 2-dimensional, not empty, symmetric, and filled just with `int` or `float` values.<\p>
+ - Correlation matrix for the chord diagram. This matrix has to be
+   2-dimensional, not   empty, symmetric, and filled just with `int` or
+   `float` values.
+   
+`names`/`n` : `list`
+ - Names for each node (default: 'Ni' for the i-th node)
+   
+`colors`/`c` : `list`
+ - Custom colors for nodes (default: seaborn hls palette)
 
+> **Returns:**
+
+`ChordDiagram`
+ - An instance of the Chord Diagram class.
+
+> **Other Parameters:**
+
+`ax` : `matplotlib.axes.Axes`
+ - Axes to plot on (default: current pyplot axis)
+    
+`radius`/`r` : `float`
+ - Radius of the diagram (default: 1.0)
+    
+`position`/`p` : `list` or `tuple`
+ - Position of the center of the diagram (default: (0,0))
+    
+`optimize` : `bool`
+ - Whether to optimize node order (default: True). To optimize node ordering around the circle, we apply Prim’s algorithm (Prim, 1957), which prioritizes stronger or shorter connections to produce a visually coherent layout
+    
+`filter` : `bool`
+ - Whether to remove nodes with no correlation (default: True)
+     
+`bezier_n` : `int`
+ - Bezier curve resolution (default: 30)
+     
+`show_diag` : `bool`
+ - Show self-connections (default: False)
+     
+`threshold`/`th` : `float`
+ - Minimum correlation threshold to display (default: 0.1)
+     
+`node_linewidth`/`nlw` : `float`
+ - Line width for nodes (default: 10)
+     
+`node_gap`/`ngap` : `float`
+ - Gap between nodes (0 to 1) (default: 0.1)
+     
+`node_labelpad`/`npad` : `float`
+ - Label position adjustment (default: 0.2)
+     
+`blend` : `bool`
+ - Whether to blend chord colors (default: True)
+     
+`blend_resolution` : `int`
+ - Color blend resolution (default: 200)
+      
+`chord_linewidth`/`clw` : `float`
+ - Line width for chords (default: 1)
+      
+`chord_alpha`/`calpha` : `float`
+ - Alpha of the facecolor for chords (default: 0.7)
+            
+`off_alpha` : `float`
+ - Alpha for non-highlighted chords (default: 0.1)
+            
+`positive_hatch` : `str`
+ - Hatch for positive correlated chords (default: None)
+            
+`negative_hatch` : `str`
+ - Hatch for negative correlated chords (default: '---')
+            
+`fontsize` : `int`
+ - Label font size (default: 15)
+            
+`font` : `dict` or `str`
+ - Label font parameters (default: None)
+            
+`min_dist` : `float`
+ - Minimum angle distance from which apply radius rule (default: 15 [degrees])
+            
+`scale` : `str`
+ - Scale use to set chord's thickness, wheter "linear" or "log" (default: "linear")
+                  
+`max_rho` : `float`
+ - Maximum chord's thickness (default: 0.4) 
+                  
+`max_rho_radius` : `float`
+ - Maximum normalized radius of the chords relative to center (default: 0.7)
+                  
+`show_axis` : `bool`
+ - Whether to show the axis (default: False)
+                  
+`legend` : `bool`
+ - Adds default positive and negative labels in the legend (default: False)
+                  
+`positive_label` : `str`
+ - Adds positive label in the legend (default: None)
+                  
+`negative_label` : `str`
+ - Adds negative label in the legend (default: None)
+                  
+`rasterized` : `bool`
+ - Whether to force rasterized (bitmap) drawing for vector graphics output (default: False)
+
+> **Examples:**
+
+See examples on how to use `chplot.chord` in this [Jupyter notebook](https://github.com/DD-Beltran-F/cachai/blob/main/docs/notebooks/chord_diagrams.ipynb).
+
+Additional graphical utilities can be accessed through the `gadgets` module. Currently, the only implemented gadget is `PolarText`:
+
+**cachai.gadgets.PolarText**
+class
+```python
+class gadgets.PolarText(center, radius, angle, text='', pad=0.0, **kwargs):
+```
+Initialize a `matplotlib.text.Text` instance using polar coordinates.
+
+> **Attributes:**
+
+`center` : `tuple`
+ - Center of the polar system in cartesian coordinates.
+   
+`radius` : `float`
+ - Radius coordinate
+   
+`theta` : `float`
+ - Angle coordinate in rad
+   
+`text` : `str`
+ - Text to diplay (default: '')
+    
+`pad` : `float`
+ - Label position adjustment (default: 0.0)
+ 
+
+> **Other Attributes:**
+
+`**kargs`
+ - Attributes inherited from `matplotlib.text.Text`
+
+> **Examples:**
+```python
+import matplotlib.pyplot as plt
+import numnpy as np
+from cachai.gadgets import PolarText
+
+fig, ax = plt.subplots()
+ax.plot([0,0],[1,1])
+polar = PolarText((0,0),1,np.pi/2,text='Im polar!',pad=0.5,ha='center', va='center')
+ax.add_artist(polar)
+plt.show()
+```
+
+## Datasets in **cachai** (`cachai.data`)
+The `data` module handles all dataset-related operations including data downloads, metadata access, and cache management.
+
+**cachai.data.load_dataset**
+method
+```python
+data.load_dataset(name='', redownload=False)
+```
+Load datasets from cachai-datasets' GitHub with a persistent cache system.
+
+> **Parameters:**
+   
+`name` : `str`
+ - Name of the dataset
+       
+`redownload` : `bool`
+ - Whether to force the re-download of the dataset, ignoring cache (defaul: False)
+    
+> **Returns:**
+       
+`pandas.DataFrame`
+
+**cachai.data.get_dataset_repo**
+method
+```python
+data.get_dataset_repo()
+```
+Return the dataset repository url.
+
+> **Returns:**
+       
+`str`
+
+**cachai.data.get_dataset_names**
+method
+```python
+data.get_dataset_names()
+```
+Return a list with the available datasets names.
+
+> **Returns:**
+       
+`list`
+
+**cachai.data.get_dataset_metadata**
+method
+```python
+data.get_dataset_metadata(name)
+```
+Print the metadata of a specific dataset.
+
+> **Parameters:**
+   
+`name` : `str`
+ - Name of the dataset
+       
+**cachai.data.clear_cache**
+method
+```python
+data.clear_cache(max_age_days=0)
+```
+Delete old cached files.
+
+> **Parameters:**
+   
+`max_age_days` : `int`
+ - Limit of days from which delete the cached files (e.g. `max_age_days=30` mean all the cached files older than 30 days will be deleted).
+       
+
+## Testing **cachai** (`cachai.tests`)
+
+## Utilities (`cachai.utilities`)

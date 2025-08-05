@@ -79,7 +79,7 @@ data = chd.load_dataset('large_correlations')
 chp.chord(data)
 ```
 
-**Note**:
+> [!NOTE]
 > Downloading datasets requires an internet connection.
 >      If the files are already cached (i.e., you’ve accessed them before), **cachai** will use the local copies, allowing offline work.
 
