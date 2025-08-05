@@ -10,8 +10,10 @@
 To contribute or report bugs, please visit the [issues page](https://github.com/DD-Beltran-F/cachai/issues).
 
 > **Fun fact:**
+>
 > "Cachai" (/kɑːˈtʃaɪ/) is a slang word from Chilean informal speech, similar to saying "ya know?" or "get it?" in English.
-> Don't know how to pronunce it? Think if "kah-CHAI" (like "cut" + "chai" tea, with stress on "CHAI").
+>
+> Don't know how to pronunce it? Think of "kah-CHAI" (like "cut" + "chai" tea, with stress on "CHAI").
 
 # :gear: Installation guide
 ### **Installing cachai**
