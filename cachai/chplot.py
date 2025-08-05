@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from   typing import Any
 from   numpy.typing import ArrayLike
-from   cachai.chord import ChordDiagram
+from   cachai._core.chord import ChordDiagram
 from   cachai import utilities as util
 # Matplotlib imports
 from   matplotlib import pyplot as plt
@@ -79,7 +79,7 @@ def chord(
     node_labelpad / npad : float
         Label position adjustment (default: 0.2)
     blend : bool
-        Whether to blend chord colors (default: False)
+        Whether to blend chord colors (default: True)
     blend_resolution : int
         Color blend resolution (default: 200)
     chord_linewidth / clw : float
