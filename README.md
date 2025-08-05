@@ -7,7 +7,7 @@
 
 **cachai**  (Custom Axes and CHarts Advanced Interface) is a fully customizable Python visualization toolkit designed to deliver polished, publication-ready plots built on top of Matplotlib. Currently, the package includes the  `ChordDiagram`  module as its primary feature. For details on the toolkit’s capabilities, motivations and future projections, refer to  [this paper](https://link/).
 
-The code documentation and installation guide are currently consolidated in this file. To contribute or report bugs, please visit the  [GitHub repository](https://github.com/DD-Beltran-F/cachai/issues).
+To contribute or report bugs, please visit the [issues page](https://github.com/DD-Beltran-F/cachai/issues).
 
 # :gear: Installation guide
 ### **Installing cachai**
@@ -83,7 +83,7 @@ chp.chord(data)
 > Downloading datasets requires an internet connection.
 >      If the files are already cached (i.e., you’ve accessed them before), **cachai** will use the local copies, allowing offline work.
 
-For more advanced examples, explore the Jupyter notebooks in the  [repository](https://github.com/DD-Beltran-F/cachai/tree/main/docs/notebooks).
+For more advanced examples, explore the Jupyter notebooks in the [docs/notebooks](https://github.com/DD-Beltran-F/cachai/tree/main/docs/notebooks).
 
 # :black_nib: Citing **cachai**
 
