@@ -113,7 +113,8 @@ Currently, **cachai** has a limited set of submodules organized into 3 core func
 `chplot` is the module that references all of **cachai**'s charts, providing a matplotlib-like interface for intuitive and easy plotting.
 
 **cachai.chplot.chord**
-method
+
+_method_
 ```python
 chplot.chord(corr_matrix,names=None,colors=None,*,**kwargs)
 ```
@@ -233,7 +234,8 @@ See examples on how to use `chplot.chord` in this [Jupyter notebook](https://git
 Additional graphical utilities can be accessed through the `gadgets` module. Currently, the only implemented gadget is `PolarText`:
 
 **cachai.gadgets.PolarText**
-class
+
+_class_
 ```python
 class gadgets.PolarText(center, radius, angle, text='', pad=0.0, **kwargs):
 ```
@@ -279,7 +281,8 @@ plt.show()
 The `data` module handles all dataset-related operations including data downloads, metadata access, and cache management.
 
 **cachai.data.load_dataset**
-method
+
+_method_
 ```python
 data.load_dataset(name='', redownload=False)
 ```
@@ -298,7 +301,8 @@ Load datasets from cachai-datasets' GitHub with a persistent cache system.
 `pandas.DataFrame`
 
 **cachai.data.get_dataset_repo**
-method
+
+_method_
 ```python
 data.get_dataset_repo()
 ```
@@ -309,7 +313,8 @@ Return the dataset repository url.
 `str`
 
 **cachai.data.get_dataset_names**
-method
+
+_method_
 ```python
 data.get_dataset_names()
 ```
@@ -320,7 +325,8 @@ Return a list with the available datasets names.
 `list`
 
 **cachai.data.get_dataset_metadata**
-method
+
+_method_
 ```python
 data.get_dataset_metadata(name)
 ```
@@ -332,7 +338,8 @@ Print the metadata of a specific dataset.
  - Name of the dataset
        
 **cachai.data.clear_cache**
-method
+
+_method_
 ```python
 data.clear_cache(max_age_days=0)
 ```
@@ -346,4 +353,36 @@ Delete old cached files.
 
 ## Testing **cachai** (`cachai.tests`)
 
+The `tests` module contains all unit tests for verifying package functionality. Built on pytest, it allows direct test access for pytest users. For convenience, we provide the `run_tests()` function to execute desired tests.
+       
+**cachai.run_tests**
+
+_method_
+```python
+run_tests(*test_args,show_details=True)
+```
+Run the tests from **cachai**.
+
+> **Parameters:**
+   
+`*test_args` : `str`
+ - Names of the tests to run (e.g. 'charts', 'utilities'). If not specified, all tests are run.
+   
+`show_details` : `bool`
+ - Whether to add -v to the pytest command line (default: True)
+ 
+ **cachai.get_available_tests**
+
+_method_
+```python
+get_available_tests()
+```
+Returns the list of available tests
+
+> **Returns:**
+   
+`list`
+ 
 ## Utilities (`cachai.utilities`)
+
+The `utilities` module contains supporting tools primarily designed for internal use, though some functions may be useful in other contexts.
