@@ -1,6 +1,6 @@
 ---
 <p align="center">
-  <img src="https://raw.githubusercontent.com/DD-Beltran-F/cachai-datasets/main/assets/cachai_logo_wide_color.svg" width="500">
+  <img src="https://raw.githubusercontent.com/DD-Beltran-F/cachai/main/docs/assets/cachai_logo_wide_color.svg" width="500">
 </p>
 
 ---
