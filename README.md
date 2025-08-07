@@ -94,6 +94,9 @@ For more advanced examples, explore the Jupyter notebooks in the [docs/notebooks
 
 If **cachai** contributed to a project that resulted in a publication, please cite [this paper](https://link/).
 
+> [!IMPORTANT]
+> The status of the associated paper (research note) is **submitted!** This means it is still under review and therefore cannot be cited yet. The example below is merely illustrative for now, stay tuned! :radio:
+
 Example citation format:
 
 ```bibtex
