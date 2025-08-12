@@ -5,7 +5,7 @@
 
 ---
 
-**cachai**  (Custom Axes and CHarts Advanced Interface) is a fully customizable Python visualization toolkit designed to deliver polished, publication-ready plots built on top of Matplotlib. Currently, the package includes the  `ChordDiagram`  module as its primary feature. For details on the toolkit’s capabilities, motivations and future projections, refer to  [this paper](https://iopscience.iop.org/article/10.3847/2515-5172/adf8df).
+**cachai**  (Custom Axes and CHarts Advanced Interface) is a fully customizable Python visualization toolkit designed to deliver polished, publication-ready plots built on top of Matplotlib. Currently, the package includes the  `ChordDiagram`  module as its primary feature. For details on the toolkit’s capabilities, motivations and future projections, refer to [this paper](https://iopscience.iop.org/article/10.3847/2515-5172/adf8df).
 
 The code documentation is currently consolidated in [docs/documentation.md](https://github.com/DD-Beltran-F/cachai/blob/main/docs/documentation.md). To contribute or report bugs, please visit the [issues page](https://github.com/DD-Beltran-F/cachai/issues).
 
@@ -26,7 +26,7 @@ pip install cachai
 If you want to verify that **cachai** works correctly on your system, you can install it with optional testing dependencies by running:
 
 ```bash
-pip install cachai[testing]
+pip install pytest
 ```
 
 ### **Requirements**
@@ -58,7 +58,7 @@ cachai.run_tests()
 Alternatively, execute this in your terminal:
 
 ```bash
-cachai-test -v
+cachai-test
 ```
 
 
