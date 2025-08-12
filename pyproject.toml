@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "cachai"
-version = "0.0.5"
+version = "0.0.6"
 description = "Customizable visualization toolkit for science"
 readme = "README.md"
 license = "GPL-3.0-or-later"
@@ -43,6 +43,11 @@ pytest = ">=7.1.0"
 [tool.poetry.scripts]
 cachai-test = "cachai.__main__:main"
 
+[tool.pytest.ini_options]
+filterwarnings = [
+    'ignore::UserWarning:numpy._core.getlimits',
+]
+
 [tool.poetry.urls]
 Homepage = "https://github.com/DD-Beltran-F/cachai"
 Repository = "https://github.com/DD-Beltran-F/cachai"
@@ -50,8 +55,3 @@ Issues = "https://github.com/DD-Beltran-F/cachai/issues"
 Documentation = "https://github.com/DD-Beltran-F/cachai/blob/main/docs/documentation.md"
 Changelog = "https://github.com/DD-Beltran-F/cachai/releases"
 "Related Publication" = "https://iopscience.iop.org/article/10.3847/2515-5172/adf8df"
-
-[tool.pytest.ini_options]
-filterwarnings = [
-    'ignore::UserWarning:numpy._core.getlimits',
-]
