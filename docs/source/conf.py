@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 project   = 'cachai'
 copyright = '2025, D. Beltrán'
 author    = 'Diego Beltrán'
-release   = '0.0.6'
+release   = '0.1.0'
 
 # -- General configuration -------------------------------------------------------------------------
 extensions = [
