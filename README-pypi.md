@@ -12,25 +12,27 @@ For details on the toolkit's capabilities, motivations and future projections, r
 [this paper](https://iopscience.iop.org/article/10.3847/2515-5172/adf8df).
 
 The code documentation is currently consolidated in
-[Read the Docs](file:///home/dbeltran/CACHAI/cachai/docs/build/html/documentation/indexdoc.html).
+[Read the Docs](https://cachai.readthedocs.io/en/latest/index.html).
 To contribute or report bugs, please visit the
 [issues page](https://github.com/DD-Beltran-F/cachai/issues).
 
 > **Fun fact:**
 >
-> "Cachai" (/kɑːˈtʃaɪ/) is a slang word from Chilean informal speech, similar to saying "ya know?" or "get it?" in English.
-> Don't know how to pronounce it? Think of "kah-CHAI" (like "cut" + "chai" tea, with stress on "CHAI").
+> "Cachai" (/kɑːˈtʃaɪ/) is a slang word from Chilean informal speech, similar to saying "ya know?"
+> or "get it?" in English. Don't know how to pronounce it? Think of "kah-CHAI" (like "cut" + "chai"
+> tea, with stress on "CHAI").
 
-Please visit the following links to learn more about cachai:
+Please visit the following links to learn more about **cachai**:
 
- - [Installation Guide](https://cachai.readthedocs.io/en/latest/installation.html)
- - [Getting Started](https://cachai.readthedocs.io/en/latest/getting_started.html)
- - [Examples](https://cachai.readthedocs.io/en/latest/examples.html)
+ - [**Installation Guide**](https://cachai.readthedocs.io/en/latest/installation.html)
+ - [**Getting Started**](https://cachai.readthedocs.io/en/latest/getting_started.html)
+ - [**Examples**](https://cachai.readthedocs.io/en/latest/examples.html)
 
 
 ## **Installing cachai**
 
-All official releases of **cachai** are published on PyPI. To install, simply run:
+All official releases of **cachai** are published on
+[:package: **PyPI**](https://pypi.org/project/cachai/). To install, simply run:
 
 ```bash
 pip install cachai
@@ -40,7 +42,6 @@ pip install cachai
 
 **cachai** has been tested on  Python >= 3.10.
 
-**Core dependencies**: 
 This Python packages are mandatory:
 
  - [numpy](https://numpy.org) >= 2.0.0
@@ -52,7 +53,7 @@ This Python packages are mandatory:
 ## Citing **cachai**
 
 If **cachai** contributed to a project that resulted in a publication,
-please cite [this paper](https://iopscience.iop.org/article/10.3847/2515-5172/adf8df).
+please cite [**this paper**](https://iopscience.iop.org/article/10.3847/2515-5172/adf8df).
 
 Example citation format (``bibtex``):
 
