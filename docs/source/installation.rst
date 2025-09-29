@@ -23,13 +23,13 @@ To install, simply run:
 
     $ pip install cachai
 
-If you want to verify that **cachai** works correctly on your system, you can install the optional
-testing dependency:
+If you want to verify that **cachai** works correctly on your system, you can install it with
+the optional testing dependencies:
 
 .. code-block:: console
     :class: mock-block
 
-    $ pip install pytest
+    $ pip install cachai[testing]
 
 
 Requirements

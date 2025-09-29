@@ -16,16 +16,16 @@ The code documentation is currently consolidated in
 To contribute or report bugs, please visit the
 [issues page](https://github.com/DD-Beltran-F/cachai/issues).
 
-> :cookie: **Fun fact:**
+> **Fun fact:**
 >
 > "Cachai" (/kɑːˈtʃaɪ/) is a slang word from Chilean informal speech, similar to saying "ya know?" or "get it?" in English.
 > Don't know how to pronounce it? Think of "kah-CHAI" (like "cut" + "chai" tea, with stress on "CHAI").
 
 Please visit the following links to learn more about cachai:
 
- - [:gear: Installation Guide](https://cachai.readthedocs.io/en/latest/installation.html)
- - [:rocket: Getting Started](https://cachai.readthedocs.io/en/latest/getting_started.html)
- - [:bulb: Examples](https://cachai.readthedocs.io/en/latest/examples.html)
+ - [Installation Guide](https://cachai.readthedocs.io/en/latest/installation.html)
+ - [Getting Started](https://cachai.readthedocs.io/en/latest/getting_started.html)
+ - [Examples](https://cachai.readthedocs.io/en/latest/examples.html)
 
 
 ## **Installing cachai**

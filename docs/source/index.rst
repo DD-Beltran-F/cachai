@@ -14,7 +14,7 @@ Home
 Welcome! **cachai**  (Custom Axes and CHarts Advanced Interface) is a fully customizable Python
 visualization toolkit designed to deliver polished, publication-ready plots built on top of
 Matplotlib. Currently, the package includes the  ``ChordDiagram``  module as its primary feature.
-For details on the toolkit’s capabilities, motivations and future projections, refer to
+For details on the toolkit's capabilities, motivations and future projections, refer to
 `this paper <https://iopscience.iop.org/article/10.3847/2515-5172/adf8df>`_ |:smile:|.
 
 To contribute or report bugs, please visit the
