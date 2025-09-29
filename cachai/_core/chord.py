@@ -2,8 +2,8 @@
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from   cachai import utilities as util
-from   cachai import gadgets
+import cachai.utilities as chu
+import cachai.gadgets as chg
 # Matplotlib imports
 from   matplotlib import pyplot as plt
 from   matplotlib.patches import Arc, Circle, PathPatch
@@ -11,11 +11,10 @@ from   matplotlib.path import Path
 import matplotlib.colors as mtpl_colors
 from   matplotlib.text import Text
 
-
 class ChordDiagram():
     def __init__(self, corr_matrix, **kwargs):
         """
-        Initialize a ChordDiagram visualization.
+        Initialize a ChordDiagram instance.
         """
         # Correlation matrix error handling
         self.corr_matrix = corr_matrix
@@ -45,11 +44,11 @@ class ChordDiagram():
         
         # Generate the diagram
         self.__generate_diagram()
-    
-    
+
     # Util methods
     def _validate_corr_matrix(self):
-        """Validate that a correlation matrix meets the required specifications:
+        """
+        Validate that a correlation matrix meets the required specifications:
             - Input is a numpy.ndarray or pandas.DataFrame
             - Matrix is 2-dimensional
             - Matrix is not empty
@@ -147,15 +146,17 @@ class ChordDiagram():
             # Add patches to axes
             for node_patch, node_label in zip(self.node_patches, self.node_labels_params):
                 self.ax.add_patch(node_patch)
-                label = gadgets.PolarText(self.position,
-                                          node_label['r'],
-                                          node_label['theta'],
-                                          text=node_label['label'],
-                                          pad=self.node_labelpad,
-                                          rotation=node_label['rot'],
-                                          ha='center', va='center',
-                                          clip_on=True,
-                                          rasterized=self.rasterized)
+                label = chg.PolarText(
+                    self.position,
+                    node_label['r'],
+                    np.rad2deg(node_label['theta']),
+                    text=node_label['label'],
+                    pad=self.node_labelpad,
+                    rotation=node_label['rot'],
+                    ha='center', va='center',
+                    clip_on=True,
+                    rasterized=self.rasterized,
+                )
                 label.set_font(self.font)
                 self.ax.add_artist(label)
                 self.node_labels.append(label)
@@ -198,7 +199,7 @@ class ChordDiagram():
             theta_i   = theta_i + np.min([gap_angle,theta_f])
             # -----------------------
             theta_m   = (theta_i + theta_f)/2
-            theta_arc = util.angdist(theta_i,theta_f)
+            theta_arc = chu.angdist(theta_i,theta_f)
             node_data['theta_i']   = theta_i
             node_data['theta_f']   = theta_f
             node_data['theta_m']   = theta_m
@@ -276,7 +277,7 @@ class ChordDiagram():
         for n in self.nodes:
             node = self.nodes[n]
             chord_color = self.colors[n]
-            chord_edge  = util.mod_color(self.colors[n],light=0.5)
+            chord_edge  = chu.mod_color(self.colors[n],light=0.5)
             if self.blend:
                 chord_color = 'none'
                 chord_edge = '#3D3D3D'
@@ -335,9 +336,9 @@ class ChordDiagram():
                         self.global_indexes.append(n)
                         
                     except Exception as e:
-                        print(util.textco(rf'ChordError: Problem creating chord from {self.names[n]} to {self.names[m]}.',
+                        print(chu.strcol(rf'ChordError: Problem creating chord from {self.names[n]} to {self.names[m]}.',
                                           c='red'))
-                        print(util.textco(f'            details: {e}',
+                        print(chu.strcol(f'            details: {e}',
                                           c='red'))
     
     def __generate_legend(self):
@@ -383,25 +384,25 @@ class ChordDiagram():
         # Polar
         alpha_i, alpha_f = alpha
         alpha_m = np.mean([alpha_f,alpha_i])
-        alphas = util.angspace(alpha_i,alpha_f)
+        alphas = chu._angspace(alpha_i,alpha_f)
         if len(alphas) == 0: alphas = np.array([alpha_i,alpha_f]) # Case: angdist too short
 
         beta_i, beta_f = beta
         beta_m = np.mean([beta_f,beta_i])
-        betas = util.angspace(beta_i,beta_f)
+        betas = chu._angspace(beta_i,beta_f)
         if len(betas) == 0: betas = np.array([beta_i,beta_f]) # Case: angdist too short
 
-        dist = util.angdist(alpha_m, beta_m)
+        dist = chu.angdist(alpha_m, beta_m)
         r_rho = self._radius_rule(dist) * self.radius
-        dist_inex = np.min([util.angdist(alpha_i, beta_f), util.angdist(alpha_f, beta_i)])
+        dist_inex = np.min([chu.angdist(alpha_i, beta_f), chu.angdist(alpha_f, beta_i)])
 
         # Convex case
-        if util.angdist(alpha_i, beta_f) < util.angdist(alpha_f, beta_i):
+        if chu.angdist(alpha_i, beta_f) < chu.angdist(alpha_f, beta_i):
             theta_rho = beta_f + dist_inex / 2
             r_AB = r_rho
             r_BA = r_rho + rho * self.radius
         # Concave case
-        elif util.angdist(alpha_i, beta_f) >= util.angdist(alpha_f, beta_i):
+        elif chu.angdist(alpha_i, beta_f) >= chu.angdist(alpha_f, beta_i):
             theta_rho = alpha_f + dist_inex / 2
             r_AB = r_rho + rho * self.radius
             r_BA = r_rho
@@ -456,18 +457,17 @@ class ChordDiagram():
         P0 = curve['P0']
         P1 = curve['P1']
         P2 = curve['P2']
-        bezier = util.get_bezier_curve(P0,P1,P2,n=self.bezier_n)
-        bezier_equidistant = util.equidistant(bezier)
+        bezier = chu.get_bezier_curve(P0,P1,P2,n=self.bezier_n)
+        bezier_equidistant = chu.equidistant(bezier)
 
         # Color map
-        norm        = mtpl_colors.Normalize(vmin=-1, vmax=1)
         c1          = curve['c1'] # Color 1
         c2          = curve['c2'] # Color 2
         chord_cmap  = sns.blend_palette([c1,c1,c2,c2],as_cmap=True)
-        cmap_matrix = util.map_from_curve(bezier_equidistant,xlims=(xmin,xmax),ylims=(ymin,ymax),
-                                     resolution=self.blend_resolution)
+        cmap_matrix = chu.map_from_curve(bezier_equidistant,xlim=(xmin,xmax),ylim=(ymin,ymax),
+                                         resolution=self.blend_resolution)
         self.chord_blends[n].append(
-            util.colormapped_patch(
+            chu.colormapped_patch(
                 patch,
                 cmap_matrix,
                 ax=self.ax,
@@ -533,10 +533,24 @@ class ChordDiagram():
                     if self.blend == True: self.chord_blends[n][c].set_alpha(self.off_alpha)
 
     # Customization methods
-    def highlight_node(self,node:int,chords:list=None,alpha:float=None):
-        """
-        Targeted highlighting of the n-th node
-        You can also select the chords that you want to highlight using chords = [0,1,...]
+    def highlight_node(self,node,chords=None,alpha=None):
+        """:meta private:
+        Highlights a specific node.
+        This affects the node and all its chords. If you want to highlight only some chords in the
+        node, you can indicate this with ``chords``.
+
+        Nodes are indexed based on their circular arrangement around the origin (center of the
+        Chord Diagram). Index ``0`` corresponds to the first node in the first quadrant, with
+        numbering proceeding counterclockwise around the diagram. Chords within each node are also
+        indexed counterclockwise, starting from the outermost chord.
+
+        Parameters
+            node : :class:`int`
+                Index of the node to highlight (starting in 0).
+            chords : :class:`list` or :class:`array-like`, optional
+                List of chord indices to highlight (default: all chords).
+            alpha : :class:`float`, optional
+                Transparency level for highlighting.
         """
         if node >= len(self.nodes):
             raise IndexError('Node is out of range. '
@@ -548,8 +562,18 @@ class ChordDiagram():
         for chord in chords:
             self.highlight_chord(node,chord,alpha)
 
-    def highlight_chord(self,node:int,chord:int,alpha:float=None):
-        """Targeted highlighting of the c-th chord in the n-th node"""
+    def highlight_chord(self,node,chord,alpha=None):
+        """:meta private:
+        Highlights a specific chord connected to a particular node.
+
+        Parameters
+            node : :class:`int`
+                Index of the node where the chord originates.
+            chord : :class:`int`
+                Index of the chord to highlight (starting in 0).
+            alpha : :class:`float`, optional
+                Transparency level for highlighting.
+        """
         if node >= len(self.nodes):
             raise IndexError('Node is out of range. '
                 f'This Chord Diagram has only {len(self.nodes)} nodes.')
@@ -571,6 +595,13 @@ class ChordDiagram():
                     f'Node {node} has only {len(self.__ports_refs[node])} chords.')
 
     def set_chord_alpha(self,alpha):
+        """:meta private:
+        Sets the transparency level for all chords in the diagram.
+
+        Parameters
+            alpha : :class:`float`
+                Transparency value applied to all chords.
+        """
         for n in self.nodes:
             for cp in self.chord_patches[n]: cp.set_alpha(alpha)
             if self.blend == True:

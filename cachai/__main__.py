@@ -20,7 +20,7 @@ def main():
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
-        help='Mostrar output detallado (equivalente a pytest -v)'
+        help='Show detailed output (equivalent to pytest -v)'
     )
     
     # Option to show available tests

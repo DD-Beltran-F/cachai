@@ -20,7 +20,6 @@ venv/
 images/
 *.ecsv
 *.csv
-*.png
 *.pdf
 *.log
 

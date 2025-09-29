@@ -1,124 +1,153 @@
 # Basic imports
 import numpy as np
-import pandas as pd
-from   typing import Any
-from   numpy.typing import ArrayLike
-from   cachai._core.chord import ChordDiagram
-from   cachai import utilities as util
-# Matplotlib imports
 from   matplotlib import pyplot as plt
-from   matplotlib.axes import Axes
+# Cachai imports
+from   cachai._core.chord import ChordDiagram
+from   cachai.gadgets import PolarText
+from   cachai.utilities import validate_kwargs
 
 def chord(
-    corr_matrix      : np.ndarray | pd.DataFrame,
-    names            : ArrayLike = None,
-    colors           : ArrayLike = None,
-    *,
-    ax               : Axes = None,
-    radius           : float = 1,
-    position         : ArrayLike = (0,0),
-    optimize         : bool = True,
-    filter           : bool = True,
-    bezier_n         : int = 30,
-    show_diag        : bool = False,
-    threshold        : float = 0.1,
-    node_linewidth   : float = 10,
-    node_gap         : float = 0.1,
-    node_labelpad    : float = 0.2,
-    blend            : bool = True,
-    blend_resolution : int = 200,
-    chord_linewidth  : float = 1,
-    chord_alpha      : float = 0.7,
-    off_alpha        : float = 0.1,
-    positive_hatch   : str = None,
-    negative_hatch   : str = '---',
-    fontsize         : int = 15,
-    font             : dict | str = None,
-    min_dist         : float = np.deg2rad(15),
-    scale            : str = 'linear',
-    max_rho          : float = 0.4,
-    max_rho_radius   : float = 0.7,
-    show_axis        : bool = False,
-    legend           : bool = False,
-    positive_label   : str = None,
-    negative_label   : str = None,
-    rasterized       : bool = False,
-    **kwargs         : Any,
-    ) -> ChordDiagram:
+        corr_matrix,names=None,colors=None,*,ax=None,radius=1,position=(0,0),optimize=True,
+        filter=True,bezier_n=30,show_diag=False,threshold=0.1,node_linewidth=10,node_gap=0.1,
+        node_labelpad=0.2,blend=True,blend_resolution=200,chord_linewidth=1,chord_alpha=0.7,
+        off_alpha=0.1,positive_hatch=None,negative_hatch='---',fontsize=15,font=None,
+        min_dist=np.deg2rad(15),scale='linear',max_rho=0.4,max_rho_radius=0.7,show_axis=False,
+        legend=False,positive_label=None,negative_label=None,rasterized=False,**kwargs,
+    ):
     """
-    Create and return a ChordDiagram visualization.
+    A Chord Diagram from a correlation matrix, with customizable threshold, style, and colors.
     
-    Parameters:
-    -----------
-    corr_matrix : numpy.ndarray or pandas.DataFrame
-        Correlation matrix for the chord diagram
-    names / n : list
-        Names for each node (default: 'Ni' for the i-th node)
-    colors / c : list
-        Custom colors for nodes (default: seaborn hls palette)
-    ax : matplotlib.axes.Axes
-        Axes to plot on (default: current pyplot axis)
-    radius / r : float
-        Radius of the diagram (default: 1.0)
-    position / p : tuple
-        Position of the center of the diagram (default: (0,0))
-    optimize : bool
-        Whether to optimize node order (default: True)
-    filter : bool
-        Whether to remove nodes with no correlation (default: True)
-    bezier_n : int
-        Bezier curve resolution (default: 30)
-    show_diag : bool
-        Show self-connections (default: False)
-    threshold / th : float
-        Minimum correlation threshold to display (default: 0.1)
-    node_linewidth / nlw : float
-        Line width for nodes (default: 10)
-    node_gap / ngap : float
-        Gap between nodes (0-1) (default: 0.1)
-    node_labelpad / npad : float
-        Label position adjustment (default: 0.2)
-    blend : bool
-        Whether to blend chord colors (default: True)
-    blend_resolution : int
-        Color blend resolution (default: 200)
-    chord_linewidth / clw : float
-        Line width for chords (default: 1)
-    chord_alpha / calpha : float
-        Alpha of the facecolor for chords (default: 0.7)
-    off_alpha : float
-        Alpha for non-highlighted chords (default: 0.1)
-    positive_hatch : str
-        Hatch for positive correlated chords (default: None)
-    negative_hatch : str
-        Hatch for negative correlated chords (default: '---')
-    fontsize : int
-        Label font size (default: 15)
-    font : dict or str
-        Label font parameters (default: None)
-    min_dist : float
-        Minimum angle distance from which apply radius rule (default: 15 [degrees])
-    scale : str
-        Scale use to set chord's thickness, wheter "linear" or "log" (default: "linear")
-    max_rho : float
-        Maximum chord's thickness (default: 0.4) 
-    max_rho_radius : float
-        Maximum normalized radius of the chords relative to center (default: 0.7)
-    show_axis : bool
-        Whether to show the axis (default: False)
-    legend : bool
-        Adds default positive and negative labels in the legend (default: False)
-    positive_label : str
-        Adds positive label in the legend (default: None)
-    negative_label : str
-        Adds negative label in the legend (default: None)
-    rasterized : bool
-        Whether to force rasterized (bitmap) drawing for vector graphics output (default: False)
+    In science, high-dimensional data are common, the choice of visualization tools directly affects
+    both interpretation and communication. Chord diagrams are particularly valuable for illustrating
+    weighted, non-directional connections --- such as (anti-)correlations --- between variables,
+    treating parameters as nodes and their correlations as links.
+
+        
+    Parameters
+        corr_matrix : :class:`numpy.ndarray` or :class:`pandas.DataFrame`
+            Correlation matrix for the chord diagram. This matrix has to be 2-dimensional, not
+            empty, symmetric, and filled just with ``int`` or ``float`` values.
+        names / n : :class:`list`, optional
+            Names for each node (default: 'Ni' for the i-th node)
+        colors / c : :class:`list`, optional
+            Custom colors for nodes (default: seaborn hls palette)
+        ax : :class:`matplotlib.axes.Axes`, optional
+            Axes to plot on (default: current pyplot axis)
     
-    Returns:
-    --------
-    ChordDiagram
-        An instance of the ChordDiagram class
+    Returns
+        :class:`ChordDiagram`:viewsource:`cachai._core.chord.ChordDiagram`
+            An instance of the ChordDiagram class
+
+    Other Parameters
+        radius / r : :class:`float`
+            Radius of the diagram (default: 1.0)
+        position / p : :class:`tuple`
+            Position of the center of the diagram (default: (0,0))
+        optimize : :class:`bool`
+            Whether to optimize node order (default: True)
+        filter : :class:`bool`
+            Whether to remove nodes with no correlation (default: True)
+        bezier_n : :class:`int`
+            Bezier curve resolution (default: 30)
+        show_diag : :class:`bool`
+            Show self-connections (default: False)
+        threshold / th : :class:`float`
+            Minimum correlation threshold to display (default: 0.1)
+        node_linewidth / nlw : :class:`float`
+            Line width for nodes (default: 10)
+        node_gap / ngap : :class:`float`
+            Gap between nodes (0-1) (default: 0.1)
+        node_labelpad / npad : :class:`float`
+            Label position adjustment (default: 0.2)
+        blend : :class:`bool`
+            Whether to blend chord colors (default: True)
+        blend_resolution : :class:`int`
+            Color blend resolution (default: 200)
+        chord_linewidth / clw : :class:`float`
+            Line width for chords (default: 1)
+        chord_alpha / calpha : :class:`float`
+            Alpha of the facecolor for chords (default: 0.7)
+        off_alpha : :class:`float`
+            Alpha for non-highlighted chords (default: 0.1)
+        positive_hatch : :class:`str`
+            Hatch for positive correlated chords (default: None)
+        negative_hatch : :class:`str`
+            Hatch for negative correlated chords (default: '---')
+        fontsize : :class:`int`
+            Label font size (default: 15)
+        font : :class:`dict` or :class:`str`
+            Label font parameters (default: None)
+        min_dist : :class:`float`
+            Minimum angle distance from which apply radius rule (default: 15 [degrees])
+        scale : :class:`str`
+            Scale use to set chord's thickness, wheter "linear" or "log" (default: "linear")
+        max_rho : :class:`float`
+            Maximum chord's thickness (default: 0.4) 
+        max_rho_radius : :class:`float`
+            Maximum normalized radius of the chords relative to center (default: 0.7)
+        show_axis : :class:`bool`
+            Whether to show the axis (default: False)
+        legend : :class:`bool`
+            Adds default positive and negative labels in the legend (default: False)
+        positive_label : :class:`str`
+            Adds positive label in the legend (default: None)
+        negative_label : :class:`str`
+            Adds negative label in the legend (default: None)
+        rasterized : :class:`bool`
+            Whether to force rasterized (bitmap) drawing for vector graphics output (default: False)
+    
+    Examples
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    First, import **cachai** and the necessary libraries.
+    
+    .. code-block:: python
+        :class: mock-block
+
+        import matplotlib.pyplot as plt
+        import cachai.chplot as chp
+
+
+    The only mandatory parameter for ``chord()`` is the correlation matrix. Assuming you already
+    have your matrix, this line will show the default plot (in some IDLEs you need to
+    add ``plt.show()``):
+
+    .. code-block:: python
+        :class: mock-block
+
+        chp.chord(corr_matrix)
+        
+
+    Now, if you want to add a legend distinguishing positive and negative correlations, just set
+    ``legend=True``. Check the next example:
+
+    .. code-block:: python
+        :class: mock-block
+
+        plt.figure(figsize=(6,6))
+
+        chp.chord(corr_matrix,
+                  threshold=0.3,
+                  negative_hatch='///',
+                  legend=True,
+                  rasterized=True)
+
+        plt.legend(loc='center',bbox_to_anchor=[0.5,0],ncols=2,fontsize=13,handletextpad=0)
+        plt.show()
+
+    To see more examples on how to use ``chplot.chord()`` check out the
+    :doc:`examples section <../../examples>`.
+
+
+    Methods
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    .. currentmodule:: cachai._core.chord
+
+    .. automethod:: ChordDiagram.highlight_node
+        :noindex:
+    .. automethod:: ChordDiagram.highlight_chord
+        :noindex:
+    .. automethod:: ChordDiagram.set_chord_alpha
+        :noindex:
     """
     # Process parameters
     params = {
@@ -173,8 +202,68 @@ def chord(
         if aliases[key] in kwargs: params[key] = kwargs.pop(aliases[key])
 
     # Check for wrong kwargs
-    util.validate_kwargs(params,kwargs,aliases)
+    validate_kwargs(kwargs.keys(),params.keys(),aliases)
 
     return ChordDiagram(**params)
 
+def polartext(radius,angle,text,center=(0,0),pad=0.0,**kwargs):
+    """
+    Place text at specified polar coordinates relative to a center point.
+
+    Parameters
+        radius : :class:`float`
+            Radius coordinate from the center.
+        theta : :class:`float`
+            Angle in degrees (0° at positive x-axis, increasing counterclockwise).
+        text : :class:`str`
+            Text to diplay.
+        center : :class:`tuple`, optional
+            Center coordinates (x,y) (default: (0,0)).
+        pad : :class:`float`, optional
+            Padding value (positive for outward displacement, negative for inward).
     
+    Returns
+        :class:`PolarText`:viewsource:`cachai.gadgets.PolarText`
+            An instance of Polar Text (base: :class:`matplotlib.text.Text`)
+
+    Other Parameters
+        ``**kwargs``
+            Keyword arguments of :class:`matplotlib.text.Text`.
+    
+    Examples
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    .. code-block:: python
+        :class: mock-block
+
+        import matplotlib.pyplot as plt
+        import cachai.chplot as chp
+
+        fig, ax = plt.subplots()
+        ax.plot([0,0],[1,1])
+        chp.polartext((0,0),1,45,text='Im polar!',pad=0.5,ha='center',va='center')
+        plt.show()
+
+    To see more examples check out the :doc:`examples section <../../examples>`.
+
+    Methods
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    .. currentmodule:: cachai.gadgets
+
+    .. automethod:: PolarText.set_polar_position
+        :noindex:
+    .. automethod:: PolarText.set_pad
+        :noindex:
+    .. automethod:: PolarText.set_radius
+        :noindex:
+    .. automethod:: PolarText.set_angle
+        :noindex:
+    .. automethod:: PolarText.set_center
+        :noindex:
+    
+    Other Methods
+        Inherited from :class:`matplotlib.text.Text`.
+    """
+    ax     = plt.gca()
+    artist = PolarText(radius,angle,text,center,pad,**kwargs)
+    ax.add_artist(artist)
+    return artist

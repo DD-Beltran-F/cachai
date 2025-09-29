@@ -97,18 +97,19 @@ If **cachai** contributed to a project that resulted in a publication, please ci
 Example citation format:
 
 ```bibtex
-@article{Beltrán_2025,
-  doi = {10.3847/2515-5172/adf8df},
-  url = {https://dx.doi.org/10.3847/2515-5172/adf8df},
-  year = {2025},
-  month = {aug},
-  publisher = {The American Astronomical Society},
-  volume = {9},
-  number = {8},
-  pages = {216},
-  author = {Beltrán, D. and Dantas, M. L. L.},
-  title = {CACHAI’s First Module: A Fully Customizable Chord Diagram for Astronomy and Beyond},
-  journal = {Research Notes of the AAS},
-  abstract = {We introduce ChordDiagram, the first module of Custom Axes and CHarts Advanced Interface (Cachai), a fully customizable visualization toolkit for Python. ChordDiagram creates publication-ready chord diagrams with fine control over edge styles, node colors, and layout, addressing key limitations of existing tools. Features include per-element styling, correlation thresholding, targeted highlighting, adaptive node spacing, log-scaled link thickness, and more. While broadly applicable, we showcase its use in astronomy by visualizing (anti-)correlations among stellar parameters and kinematics. ChordDiagram forms the foundation of the Cachai suite, available via pip (https://pypi.org/project/cachai), and at https://github.com/DD-Beltran-F/cachai, where the user can find a detailed documentation and examples.}
+@ARTICLE{Beltran_2025,
+       author = {{Beltr{\'a}n}, D. and {Dantas}, M.~L.~L.},
+        title = "{CACHAI's First Module: A Fully Customizable Chord Diagram for Astronomy and Beyond}",
+      journal = {Research Notes of the American Astronomical Society},
+     keywords = {Interdisciplinary astronomy, Astronomy data analysis, Astronomy data visualization, Astronomy software, 804, 1858, 1968, 1855},
+         year = 2025,
+        month = aug,
+       volume = {9},
+       number = {8},
+          eid = {216},
+        pages = {216},
+          doi = {10.3847/2515-5172/adf8df},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2025RNAAS...9..216B},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 ```

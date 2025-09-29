@@ -5,7 +5,7 @@ from   cachai.gadgets import PolarText
 
 @pytest.fixture
 def sample_polartext():
-    return PolarText(center=(0, 0), radius=1, angle=np.pi/4, text="Test", pad=0.1)
+    return PolarText(center=(0, 0), radius=1, angle=45, text="Test", pad=0.1)
 
 class TestPolarText:
     def test_inheritance(self,sample_polartext):
@@ -41,8 +41,8 @@ class TestPolarText:
         fig, ax = figure_with_axes
         try:
             texts = [PolarText((0, 0), 1, 0, '0°'),
-                     PolarText((0, 0), 1, np.pi/2, '90°'),
-                     PolarText((0, 0), 1, np.pi, '180°', pad=0.2)]
+                     PolarText((0, 0), 1, 90, '90°'),
+                     PolarText((0, 0), 1, 180, '180°', pad=0.2)]
             for text in texts:
                 ax.add_artist(text)
             fig.canvas.draw()
