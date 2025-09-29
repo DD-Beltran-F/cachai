@@ -1,4 +1,4 @@
-name: ":bookmark: Release ${{ github.ref_name }}"
+name: ":bookmark: Release"
 
 on:
   push:
