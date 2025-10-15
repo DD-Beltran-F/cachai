@@ -389,7 +389,7 @@ def get_bezier_curve(points,n=20):
 
         import cachai.utilities as chu
         
-        curve = chu.get_bezier_curve([0, 0], [2, 3], [4, 1], n=10)
+        curve = chu.get_bezier_curve([(0, 0), (2, 3), (4, 1)], n=10)
 
         print(curve)
         

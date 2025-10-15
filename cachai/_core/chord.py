@@ -457,7 +457,7 @@ class ChordDiagram():
         P0 = curve['P0']
         P1 = curve['P1']
         P2 = curve['P2']
-        bezier = chu.get_bezier_curve(P0,P1,P2,n=self.bezier_n)
+        bezier = chu.get_bezier_curve([P0,P1,P2],n=self.bezier_n)
         bezier_equidistant = chu.equidistant(bezier)
 
         # Color map

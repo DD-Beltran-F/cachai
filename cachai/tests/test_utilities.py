@@ -76,7 +76,7 @@ def test_quadratic_bezier(sample_curve):
 
 def test_get_bezier_curve(sample_curve):
     P0, P1, P2 = sample_curve
-    curve      = chu.get_bezier_curve(P0, P1, P2, n=10)
+    curve      = chu.get_bezier_curve([P0, P1, P2], n=10)
     assert curve.shape == (10, 2)
     assert np.allclose(curve[0], P0)
     assert np.allclose(curve[-1], P2)
@@ -89,7 +89,7 @@ def test_equidistant(sample_curve):
 
 def test_map_from_curve(sample_curve):
     P0, P1, P2 = sample_curve
-    curve      = chu.get_bezier_curve(P0, P1, P2, n=10)
+    curve      = chu.get_bezier_curve([P0, P1, P2], n=10)
     map_mat    = chu.map_from_curve(curve, resolution=50)
     assert map_mat.shape == (50, 50)
     assert np.min(map_mat) >= -1
@@ -101,7 +101,7 @@ def test_colormapped_patch(sample_curve):
     ax.add_patch(patch)
     
     P0, P1, P2 = sample_curve
-    curve      = chu.get_bezier_curve(P0, P1, P2, n=10)
+    curve      = chu.get_bezier_curve([P0, P1, P2], n=10)
     map_mat    = chu.map_from_curve(curve, resolution=50)
     img        = chu.colormapped_patch(patch, map_mat, ax=ax)
     
