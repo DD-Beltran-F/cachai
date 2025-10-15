@@ -33,6 +33,7 @@ though some functions may be useful in other contexts.
    colormapped_patch
    equidistant
    quadratic_bezier
+   cubic_bezier
    get_bezier_curve
    validate_kwargs
    kwargs_as_string
