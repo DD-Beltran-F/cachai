@@ -147,10 +147,10 @@ class ChordDiagram():
             for node_patch, node_label in zip(self.node_patches, self.node_labels_params):
                 self.ax.add_patch(node_patch)
                 label = chg.PolarText(
-                    self.position,
                     node_label['r'],
                     np.rad2deg(node_label['theta']),
                     text=node_label['label'],
+                    center=self.position,
                     pad=self.node_labelpad,
                     rotation=node_label['rot'],
                     ha='center', va='center',

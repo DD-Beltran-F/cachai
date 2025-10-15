@@ -287,7 +287,7 @@ def equidistant(points):
 def quadratic_bezier(t,P0,P1,P2):
     """
     Evaluates a
-    `quadratic Bézier <https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves>`_ curve
+    `quadratic Bézier curve <https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves>`_
     at parameter ``t`` using three control points.
 
     Parameters
@@ -320,22 +320,62 @@ def quadratic_bezier(t,P0,P1,P2):
 
         [1.25 1.25]
     """
-    if (P0 is None) or (P1 is None) or (P2 is None): return None
-    P0 = np.array(P0); P1 = np.array(P1); P2 = np.array(P2)
+    if any(p is None for p in [P0, P1, P2]): raise ValueError('Points cannot be None')
+    P0, P1, P2 = map(np.array, [P0, P1, P2])
     return (1-t)**2 * P0 + 2*(1-t)*t * P1 + t**2 * P2
 
-def get_bezier_curve(P0,P1,P2,n=20):
+def cubic_bezier(t,P0,P1,P2,P3):
     """
-    Generates a sequence of points along a
-    `quadratic Bézier curve <https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves>`_.
+    Evaluates a
+    `cubic Bézier curve <https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Higher-order_curves>`_
+    at parameter ``t`` using four control points.
 
     Parameters
+        t : :class:`float`
+            Parameter value between 0.0 and 1.0.
         P0 : :class:`tuple` or :class:`array-like`
             Starting control point (x,y).
         P1 : :class:`tuple` or :class:`array-like`
-            Middle control point (x,y).
+            First middle control point (x,y).
         P2 : :class:`tuple` or :class:`array-like`
+            Second middle point (x,y).
+        P3 : :class:`tuple` or :class:`array-like`
             Ending control point (x,y).
+    
+    Returns
+        :class:`numpy.ndarray` : point (x,y)
+    
+    Examples
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    .. code-block:: python
+        :class: in-block
+
+        import cachai.utilities as chu
+        
+        # Evaluate curve at midpoint
+        point = chu.quadratic_bezier(0.5, (0, 0), (1, 2), (3, 1))
+
+        print(point)
+        
+    .. code-block:: python
+        :class: out-block
+
+        [1.25 1.25]
+    """
+    if any(p is None for p in [P0, P1, P2, P3]): raise ValueError('Points cannot be None')
+    P0, P1, P2, P3 = map(np.array, [P0, P1, P2, P3])
+    return (1-t)**3 * P0 + 3*(1-t)**2*t * P1 + 3*(1-t)*t**2 * P2 + t**3 * P3
+
+def get_bezier_curve(points,n=20):
+    """
+    Generates a sequence of points along a
+    `Bézier curve <https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_.
+
+    Parameters
+        points : :class:`list` or :class:`array-like`
+            List containing the control points. The control points must me :class:`tuple` or
+            :class:`array-like` as (x,y). For quadratic Bézier curve 3 points are needed, for cubic
+            Bézier curve 4 points are needed.
         n : :class:`int`
             Number of points to generate along the curve (default: 20).
     
@@ -367,10 +407,18 @@ def get_bezier_curve(P0,P1,P2,n=20):
          [3.55555556 1.38271605]
          [4.         1.        ]]
     """
-    if (P0 is None) or (P1 is None) or (P2 is None): return None
+    if any(p is None for p in points): raise ValueError('Points cannot be None')
     t_values = np.linspace(0, 1, n)
-    return np.array([quadratic_bezier(t, P0, P1, P2) for t in t_values])
-
+    if len(points) == 3:
+        P0, P1, P2 = map(np.array, points)
+        return np.array([quadratic_bezier(t, P0, P1, P2) for t in t_values])
+    elif len(points) == 4:
+        P0, P1, P2, P3 = map(np.array, points)
+        return np.array([cubic_bezier(t, P0, P1, P2, P3) for t in t_values])
+    else:
+        raise ValueError(f'Expected 3 or 4 points for Bézier curve, got {len(points)} points')
+    
+    
 def validate_kwargs(keys,allowed_keys,aliases={}):
     """
     Validates that given keyword arguments are within the allowed set of parameters.

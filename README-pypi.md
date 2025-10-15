@@ -11,8 +11,8 @@ Matplotlib. Currently, the package includes the  ``ChordDiagram``  module as its
 For details on the toolkit's capabilities, motivations and future projections, refer to
 [this paper](https://iopscience.iop.org/article/10.3847/2515-5172/adf8df).
 
-The code documentation is currently consolidated in
-[Read the Docs](https://cachai.readthedocs.io/en/latest/index.html).
+The code documentation is currently hosted in
+[Read _the_ Docs](https://cachai.readthedocs.io/en/latest/index.html).
 To contribute or report bugs, please visit the
 [issues page](https://github.com/DD-Beltran-F/cachai/issues).
 
@@ -32,7 +32,7 @@ Please visit the following links to learn more about **cachai**:
 ## **Installing cachai**
 
 All official releases of **cachai** are published on
-[:package: **PyPI**](https://pypi.org/project/cachai/). To install, simply run:
+[**PyPI**](https://pypi.org/project/cachai/). To install, simply run:
 
 ```bash
 pip install cachai
