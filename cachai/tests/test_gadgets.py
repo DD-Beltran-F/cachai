@@ -20,10 +20,13 @@ class TestPolarText:
         assert np.isclose(actual_y, expected_y)
 
     def test_properties_set(self,sample_polartext):
-        """Verifica que las propiedades se establecen correctamente"""
-        test_pt = PolarText(sample_polartext.center, sample_polartext._radius,
-                            sample_polartext._angle,text='Test text')
-        test_pt.set_polar_position(radius=2.5,angle_deg=25,center=(3,4))
+        test_pt = PolarText(
+            sample_polartext._radius,
+            sample_polartext._angle,
+            text='Test text',
+            center=sample_polartext.center
+        )
+        test_pt.set_polar_position(radius=2.5,angle=25,center=(3,4))
         assert np.array_equal(test_pt.center, np.array([3, 4]))
         assert test_pt._radius == 2.5
         assert np.isclose(test_pt._angle, np.deg2rad(25))
@@ -40,9 +43,9 @@ class TestPolarText:
     def test_rendering(self,figure_with_axes):
         fig, ax = figure_with_axes
         try:
-            texts = [PolarText((0, 0), 1, 0, '0°'),
-                     PolarText((0, 0), 1, 90, '90°'),
-                     PolarText((0, 0), 1, 180, '180°', pad=0.2)]
+            texts = [PolarText(1, 0, '0°'),
+                     PolarText(1, 90, '90°'),
+                     PolarText(1, 180, '180°', pad=0.2)]
             for text in texts:
                 ax.add_artist(text)
             fig.canvas.draw()

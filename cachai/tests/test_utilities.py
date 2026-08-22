@@ -29,7 +29,7 @@ def test_chsave(tmp_path):
     test_dir     = tmp_path / 'tmp_images'
     test_pdf_dir = os.path.join(test_dir,'pdf')
     test_name    = 'tmp_img'
-    try: chu.chsave(fig_name=test_name,path=test_dir,pdf=True)
+    try: chu.chsave(name=test_name,dir_path=test_dir,pdf=True)
     except: pass
     assert os.path.exists(test_dir),\
     			'Main directory was not created'

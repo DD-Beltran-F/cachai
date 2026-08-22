@@ -6,13 +6,13 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../../'))
 
-# -- Project information ---------------------------------------------------------------------------
+#--- Project information ---------------------------------------------------------------------------
 project   = 'cachai'
-copyright = '2025, D. Beltrán'
+copyright = '2026, D. Beltrán'
 author    = 'Diego Beltrán'
-release   = '0.1.0'
+release   = '0.1.5'
 
-# -- General configuration -------------------------------------------------------------------------
+#--- General configuration -------------------------------------------------------------------------
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
@@ -28,7 +28,7 @@ exclude_patterns = [
     '../notebooks/*',
 ]
 
-# -- Options for HTML output -----------------------------------------------------------------------
+#--- Options for HTML output -----------------------------------------------------------------------
 html_theme       = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 html_css_files   = ['cachai_rtd_style.css',
@@ -52,7 +52,7 @@ html_theme_options = {
     'titles_only': False
 }
 
-# -- Bootstrap icons -------------------------------------------------------------------------------
+#--- Bootstrap icons -------------------------------------------------------------------------------
 rst_prolog = """
 .. role:: bs-icon(raw)
    :format: html
@@ -68,7 +68,7 @@ rst_prolog = """
 .. |book-half| replace:: :bs-icon:`<i class="bi bi-book-half"></i>`
 """
 
-# -- Autodoc options -------------------------------------------------------------------------------
+#--- Autodoc options -------------------------------------------------------------------------------
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
@@ -77,7 +77,7 @@ autodoc_default_options = {
     "exclude-members": "set",
 }
 
-# -- Source-like link ------------------------------------------------------------------------------
+#--- Source-like link ------------------------------------------------------------------------------
 from docutils import nodes
 from sphinx.util.docutils import SphinxRole
 
@@ -97,7 +97,7 @@ class ViewcodeLinkRole(SphinxRole):
         )
         return [node], []
 
-# -- Autodoc hook: skip unwanted modules/members ---------------------------------------------------
+#--- Autodoc hook: skip unwanted modules/members ---------------------------------------------------
 def skip_members(app, what, name, obj, skip, options):
     if name.startswith("cachai.tests"):
         return True
@@ -105,6 +105,24 @@ def skip_members(app, what, name, obj, skip, options):
         return True
     return skip
 
+#--- news/ recolation ------------------------------------------------------------------------------
+from pathlib import Path
+import shutil
+
+def copy_news(app, exception):
+
+    if exception is not None:
+        return
+
+    source = Path(app.srcdir) / "news"
+    destination = Path(app.outdir) / "news"
+
+    if destination.exists():
+        shutil.rmtree(destination)
+
+    shutil.copytree(source, destination)
+
 def setup(app):
     app.connect("autodoc-skip-member", skip_members)
     app.add_role("viewsource", ViewcodeLinkRole())
+    app.connect("build-finished", copy_news)

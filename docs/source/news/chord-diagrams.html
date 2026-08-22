@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="news.css">
+</head>
+
+<body>
+<div class="news-article">
+<h1>Introducing the "Chord Diagrams"</h1>
+
+<div class="news-article-date"> 5 August 2025</div>
+
+<hr class="custom-hr">
+
+<p>
+    While working on our astrophysics research, we wanted to use <span class="bf-text">chord diagrams</span> to visualize correlations between several physical parameters. However, we struggled to find a <span class="mono-text">Python</span> implementation that offered the level of customization we were used to with tools like <span class="mono-text">matplotlib</span>.
+</p>
+
+<p>
+    There were several options available, but each came with its own limitations. Some were designed primarily for interactive visualization, while others offered less control over the appearance and layout of the diagram. We wanted something that could fit naturally into our existing <span class="mono-text">Python</span> workflow, while still giving us precise control over how the final figure looked.
+</p>
+
+<p>
+    So, we decided to build our own. That project eventually became <span class="bf-text">Cachai</span>.
+</p>
+
+<p>
+    Today, we are releasing <span class="bf-text">the first version</span> of Cachai, featuring the very visualization that started it all: the Chord Diagrams.
+</p>
+
+<p class="p-comment">
+    Want to see how it works? Check out the <a href="https://cachai.readthedocs.io/en/latest/examples.html" target="_blank" rel="noopener noreferrer">examples section of our documentation</a> for a few practical examples of what you can do with Cachai.
+</p>
+
+<h2>What is a chord diagram?</h2>
+
+<p>
+    A chord diagram represents relationships between multiple variables arranged around a circle. Each variable is shown as a node, while connections between them are represented by chords. In Cachai, these chords can encode correlations, with their thickness representing the strength of the relationship and their appearance distinguishing positive and negative correlations.
+</p>
+
+<p>
+    This provides a compact way of looking at many relationships simultaneously, making it useful for exploring complex datasets in astronomy and beyond.
+</p>
+
+<p>
+    The module was designed with <span class="bf-text">customization in mind</span>. Users can control the layout, colors, labels, chord properties, filtering thresholds, and several other aspects of the visualization, making it possible to adapt the diagram to different datasets and presentation styles.
+</p>
+
+<h2>Another way to see your data</h2>
+
+<p>
+    Chord diagrams are not meant to replace familiar tools such as heatmaps or corner plots. Each visualization has its own strengths.
+</p>
+
+<p>
+    To illustrate this, we show the same correlation dataset using a heatmap, a corner plot, and a Cachai chord diagram:
+</p>
+
+<div class="figs-grid">
+<figure>
+    <img src="../_static/news/introducing_chords_heatmap.png" alt="introducing_chords_heatmap.png">
+    <figcaption>
+        <span class="bf-text">Figure 1.</span> Heatmap: The correlation matrix represented through color, providing a compact overview of correlation strengths.
+    </figcaption>
+</figure>
+<figure>
+    <img src="../_static/news/introducing_chords_cornerplot.png" alt="introducing_chords_cornerplot.png">
+    <figcaption>
+        <span class="bf-text">Figure 2.</span> Corner plot: Pairwise distributions and correlations for the same set of parameters.
+    </figcaption>
+</figure>
+</div>
+
+<figure>
+    <img src="../_static/news/introducing_chords_chord_cropped.png" alt="introducing_chords_chord_cropped.png" style="width: 100%; max-width: clamp(45%, 400px, 70%); height: auto;">
+    <figcaption>
+        <span class="bf-text">Figure 3.</span> Chord diagram: The same correlations represented as connections between variables using Cachai.
+    </figcaption>
+</figure>
+
+<p>
+    One of the advantages of chord diagrams is their ability to summarize many relationships in a compact figure, potentially avoiding increasingly large collections of panels as the number of variables grows. They also offer a different and, in some cases, more intuitive perspective on the overall structure of the data.
+</p>
+
+<p>
+    We do not see chord diagrams as <span class="it-text">better</span> than other visualization methods, but rather as <span class="bf-text">another tool researchers can choose from</span>, depending on what they want to communicate.
+</p>
+
+<h2>Just the beginning</h2>
+
+<p>
+    The Chord Diagram module is where Cachai started, but it will not end there. We plan to expand the package with new and unconventional visualization ideas, always with the goal of making complex scientific data easier to explore and communicate.
+</p>
+
+<p>
+    This is only our first release, and we are excited to see where Cachai goes next.
+</p>
+
+<hr class="custom-hr">
+
+<div class="news-footer">
+  <img src="../_static/cachai_logo_wide_dark.svg" alt="Cachai logo">
+</div>
+
+</div>
+</body>
+</html>

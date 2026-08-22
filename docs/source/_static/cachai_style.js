@@ -135,3 +135,53 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// News
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modal = document.getElementById("news-modal");
+    const frame = document.getElementById("news-modal-frame");
+    const closeButton = document.querySelector(".news-modal-close");
+    const cards = document.querySelectorAll(".news-card");
+
+    // Open a news article
+    cards.forEach(function (card) {
+        card.addEventListener("click", function (event) {
+            event.preventDefault();
+            const newsId = card.dataset.news;
+            if (!newsId) {
+                return;
+            }
+            frame.src = "news/" + newsId + ".html";
+            modal.classList.add("open");
+            document.body.style.overflow = "hidden";
+        });
+    });
+
+    // Close modal
+    function closeModal() {
+        modal.classList.remove("open");
+        document.body.style.overflow = "";
+        frame.src = "";
+    }
+
+    // Close button
+    closeButton.addEventListener("click", closeModal);
+
+    // Click outside modal
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Escape key
+    document.addEventListener("keydown", function (event) {
+        if (
+            event.key === "Escape" &&
+            modal.classList.contains("open")
+        ) {
+            closeModal();
+        }
+    });
+});

@@ -4,8 +4,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "cachai"
-version = "0.1.4"
+version = "0.1.5"
 description = "Customizable visualization toolkit for science"
+homepage = "https://cachai.readthedocs.io/en/latest/index.html"
 readme = "README-pypi.md"
 license = "GPL-3.0-or-later"
 authors = [

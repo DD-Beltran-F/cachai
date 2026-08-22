@@ -42,16 +42,17 @@ class TestChordDiagram:
 		])
 	def test_corr_matrices(self,invalid_matrix):
 		with pytest.raises((ValueError, TypeError)):
-		    chord(corr_matrix=invalid_matrix)
+			chord(corr_matrix=invalid_matrix)
+			plt.close()
 
 	def test_node_count(self,basic_chord):
 		assert len(basic_chord.nodes) == basic_chord.corr_matrix.shape[0]
 
 	def test_node_angles(self, basic_chord):
 		for node in basic_chord.nodes.values():
-		    assert 0 <= node['theta_i'] <= 2*np.pi
-		    assert 0 <= node['theta_f'] <= 2*np.pi
-		    assert node['theta_i'] < node['theta_f']
+			assert 0 <= node['theta_i'] <= 2*np.pi
+			assert 0 <= node['theta_f'] <= 2*np.pi
+			assert node['theta_i'] < node['theta_f']
 		    
 	def test_scale_rho_linear(self,basic_chord):
 		basic_chord.max_rho = 1.0
@@ -81,10 +82,12 @@ class TestChordDiagram:
 				chord(corr_matrix=sample_corr_matrix,
 		        	  names=sample_names,
 		        	  th=threshold)
+				plt.close()
 		else:
 			temp_cd = chord(corr_matrix=sample_corr_matrix,
 		        		 		names=sample_names,
 		        		 		th=threshold)
+			plt.close()
 			assert len(temp_cd.node_patches) == count,\
 					'Node patches generation went wrong'
 			assert len(temp_cd.node_labels)  == count,\
@@ -121,6 +124,7 @@ class TestChordDiagram:
 		    			threshold=0.3,
 		    			filter=False)
 		initialization_time = time.time() - start_time
+		plt.close()
 
 		assert temp_cd is not None
 		assert len(temp_cd.nodes)  == size
@@ -146,8 +150,10 @@ class TestChordDiagram:
 
 		cd_no_opt = chord(corr_matrix=large_matrix,
 		    			  optimize=False)
+		plt.close()
 		cd_opt = chord(corr_matrix=large_matrix,
 		    		   optimize=True)
+		plt.close()
 
 		assert cd_no_opt.order != cd_opt.order,\
 				'The optimization did not change the order of the nodes'
@@ -159,11 +165,12 @@ class TestChordDiagram:
 	def test_highlighting_nodes(self,sample_corr_matrix,node):
 		temp_cd = chord(corr_matrix=sample_corr_matrix,th=0)
 		temp_cd.highlight_node(node)
+		plt.close()
 
-	@pytest.mark.parametrize('node,c', [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1)],
-							 ids=['node=0,chord=0','node=0,chord=1',
-							      'node=1,chord=0','node=1,chord=1',
-							      'node=2,chord=0','node=2,chord=1'])
-	def test_highlighting_chords(self,sample_corr_matrix,node,c):
+	@pytest.mark.parametrize('nodeA,nodeB', [(0,1),(1,0),(1,2),(2,1)],
+							 ids=['nodeA=0,nodeB=1','nodeA=1,nodeB=0',
+							      'nodeA=1,nodeB=2','nodeA=2,nodeB=1'])
+	def test_highlighting_chords(self,sample_corr_matrix,nodeA,nodeB):
 		temp_cd = chord(corr_matrix=sample_corr_matrix,th=0)
-		temp_cd.highlight_chord(node,c)
+		temp_cd.highlight_chord(nodeA,nodeB)
+		plt.close()

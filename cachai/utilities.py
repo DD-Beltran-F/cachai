@@ -366,7 +366,7 @@ def cubic_bezier(t,P0,P1,P2,P3):
     P0, P1, P2, P3 = map(np.array, [P0, P1, P2, P3])
     return (1-t)**3 * P0 + 3*(1-t)**2*t * P1 + 3*(1-t)*t**2 * P2 + t**3 * P3
 
-def get_bezier_curve(points,n=20):
+def get_bezier_curve(points,ti=0,tf=1,n=20):
     """
     Generates a sequence of points along a
     `Bézier curve <https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_.
@@ -376,6 +376,12 @@ def get_bezier_curve(points,n=20):
             List containing the control points. The control points must me :class:`tuple` or
             :class:`array-like` as (x,y). For quadratic Bézier curve 3 points are needed, for cubic
             Bézier curve 4 points are needed.
+        ti : :class:`float`
+            Initial parameter ``t``. Must be greater than or equal to 0, and lower than ``tf``.
+            Default is ``0``.
+        tf : :class:`float`
+            Final parameter ``t``. Must be less than or equal to 1, and greater than ``ti``.
+            Default is ``1``.
         n : :class:`int`
             Number of points to generate along the curve (default: 20).
     
@@ -408,7 +414,8 @@ def get_bezier_curve(points,n=20):
          [4.         1.        ]]
     """
     if any(p is None for p in points): raise ValueError('Points cannot be None')
-    t_values = np.linspace(0, 1, n)
+    if not (0 <= ti <= tf <= 1): raise ValueError("ti and tf must satisfy 0 <= ti <= tf <= 1")
+    t_values = np.linspace(ti, tf, n)
     if len(points) == 3:
         P0, P1, P2 = map(np.array, points)
         return np.array([quadratic_bezier(t, P0, P1, P2) for t in t_values])

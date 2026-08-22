@@ -39,7 +39,7 @@ def main():
             print(f'  {test}')
         sys.exit(0)
     
-    sys.exit(run_tests(*args.tests))
+    sys.exit(run_tests(*args.tests, show_details=args.verbose))
 
 if __name__ == '__main__':
     main()
