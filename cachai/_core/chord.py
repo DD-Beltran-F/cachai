@@ -1,4 +1,4 @@
-# Basic imports
+# General imports
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -57,10 +57,10 @@ class ChordDiagram():
         temp_corr_matrix = self.corr_matrix
         if not isinstance(temp_corr_matrix, (np.ndarray, pd.DataFrame)):
             raise TypeError('Your correlation matrix must be a numpy.ndarray or pandas.DataFrame')
-        # -- This block of code should not be here, but its necessary for the next validations --
+        #--- This block of code should not be here, but its necessary for the next validations -----
         if isinstance(temp_corr_matrix, pd.DataFrame):
             temp_corr_matrix = self.corr_matrix.to_numpy()
-        # ---------------------------------------------------------------------------------------
+        #-------------------------------------------------------------------------------------------
         if temp_corr_matrix.ndim != 2:
             raise ValueError('Your correlation matrix must be a 2-dimensional array')
         if temp_corr_matrix.shape[0] != temp_corr_matrix.shape[1]:
