@@ -35,6 +35,7 @@ though some functions may be useful in other contexts.
    quadratic_bezier
    cubic_bezier
    get_bezier_curve
+   minmax
    validate_kwargs
    kwargs_as_string
    mod_color
