@@ -1,12 +1,13 @@
-# Imports
+# General imports
 import os
 import numpy as np
 import colorsys
-# Matplotlib imports
-from   matplotlib import pyplot as plt
-# Scipy imports
+import pandas as pd
 from   scipy.spatial.distance import cdist
 from   scipy.interpolate import interp1d
+# Matplotlib imports
+from   matplotlib import pyplot as plt
+
 
 def chsave(name="figure",dir_path="images",pdf=True,img_dpi=300,pdf_dpi=200):
     """
@@ -95,6 +96,29 @@ def _angspace(alpha,beta,n=200):
     ndots = int(theta*n/(2*np.pi))
     if ndots == 1: ndots = 2
     return np.linspace(alpha,beta,ndots)
+
+def _optimal_grid(n,w,h):
+    ''':meta-private:
+    Maximize the number of positions occupied in the grid of axes
+    '''
+    best = None
+
+    for cols in range(1,n+1):
+        rows = (n+cols - 1) // cols
+
+        side = min(w/cols, h/rows)
+        occupied_area = n*side**2
+
+        if best is None or occupied_area > best['occupied_area']:
+            best = {
+                'w'             : w,
+                'h'             : h,
+                'nrows'         : rows,
+                'ncols'         : cols,
+                'occupied_area' : occupied_area,
+            }
+
+    return best
 
 def map_from_curve(curve=None,xlim=(-1,1),ylim=(-1,1),resolution=200):
     """
@@ -424,7 +448,155 @@ def get_bezier_curve(points,ti=0,tf=1,n=20):
         return np.array([cubic_bezier(t, P0, P1, P2, P3) for t in t_values])
     else:
         raise ValueError(f'Expected 3 or 4 points for Bézier curve, got {len(points)} points')
+
+def minmax(input_data,exclude=[],ranges={}):
+    '''
+    Normalize columns using
+    `min-max scaling <https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)>`_.
+
+    This function rescales each feature independently by mapping its minimum and maximum values to a
+    specified range. By default, all features are normalized to the interval [0, 1]. Custom ranges
+    can be defined for individual features, and selected columns can be excluded from normalization.
+
+    Parameters
+        input_data : :class:`numpy.ndarray`, :class:`pandas.DataFrame` or :class:`astropy.table.Table`
+            Input data to normalize. Must contain two-dimensional tabular data, with rows
+            representing observations and columns representing features. The input must be
+            convertible to floating-point values.
+        exclude : :class:`list` or :class:`array-like`, optional
+            Column names (for DataFrames and Astropy Tables) or column indices to exclude (starting
+            from zero). Excluded columns are omitted from the output.
+            Default is ``[]``.
+        ranges : :class:`dict`, optional
+            Dictionary mapping column names or indices to ``(low, high)`` tuples defining custom
+            normalization ranges. Unspecified columns are normalized to ``[0, 1]``. Descending
+            ranges are allowed.
+            Default is ``{}``.
     
+    Returns
+        :class:`pandas.DataFrame` : DataFrame containing the normalized columns in their original
+        order, with excluded columns removed. Original column names are preserved when available.
+        NumPy arrays receive generic names (``col_01``, ``col_02``, etc.).
+
+    Examples
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    .. code-block:: python
+        :class: in-block
+
+        import pandas as pd
+        import cachai.utilities as chu
+
+        data = pd.read_csv('your_path/your_file.csv')
+        
+        normalized = chu.minmax(data, exclude=['A'], ranges={'B': (1.0, 0.0), 'D': (0.3, 0.8)})
+
+        print(normalized)
+        
+    .. code-block:: python
+        :class: out-block
+
+            B           C           D           E
+        0	0.000000	0.329954	0.505128	0.989597
+        1	1.000000	1.000000	0.800000	0.000000
+        2	0.375866	0.000000	0.300000	1.000000
+    '''
+
+    # Identify input type and retrieve column names
+    if type(input_data).__name__ == 'DataFrame': # Pandas support
+        names = input_data.columns.tolist()
+        data  = input_data
+
+    elif type(input_data).__name__ == 'Table': # Astropy support
+        names = input_data.colnames
+        data  = input_data
+    
+    elif type(input_data).__name__ == 'ndarray': # Numpy support
+        if input_data.ndim != 2:
+            raise ValueError("input_data must be a two-dimensional array.")
+        names = [f'col_{i + 1:02d}' for i in range(input_data.shape[1])]
+        data  = input_data
+
+    else:
+        raise TypeError("input_data must be a numpy.ndarray, pandas.DataFrame "
+                        "or astropy.table.Table.")
+
+    # Normalize exclude to a list
+    exclude = [] if exclude is None else list(exclude)
+
+    # Convert excluded column names and indices to integer indices
+    excluded_indices = set()
+
+    for col in exclude:
+        if isinstance(col, (int, np.integer)) and not isinstance(col, (bool, np.bool_)):
+            if not 0 <= col < len(names):
+                raise IndexError(f"Column index {col} is out of range.")
+
+            excluded_indices.add(int(col))
+
+        elif type(data).__name__ in ('DataFrame','Table') and col in names:
+            excluded_indices.add(names.index(col))
+
+        else:
+            raise TypeError(
+                f'Invalid excluded column {col!r}. Use valid column names or integer indices.'
+            )
+
+    # Select columns and preserve their original order.
+    keep_indices = [i for i in range(len(names)) if i not in excluded_indices]
+    names        = [names[i] for i in keep_indices]
+
+    if type(input_data).__name__ == 'DataFrame':
+        data = data.iloc[:,keep_indices].to_numpy()
+
+    elif type(input_data).__name__ == 'Table':
+        data = data[names].to_pandas().to_numpy()
+
+    else:
+        data = data[:,keep_indices]
+
+    # Transpose once so each row represents a feature.
+    data = data.T.astype(float, copy=True)
+
+    # Resolve ranges keys to integer indices.
+    feature_ranges = {}
+
+    for col, value in ranges.items():
+        if isinstance(col, (int, np.integer)) and not isinstance(col, (bool, np.bool_)):
+            if not 0 <= col < len(names):
+                raise IndexError(f'Column index {col} is out of range after exclusions.')
+
+            idx = int(col)
+
+        elif type(input_data).__name__ == 'ndarray' and isinstance(col, str):
+            # Numpy arrays do not retain their original column names
+            raise TypeError('Column names cannot be used with numpy.ndarray input.')
+
+        elif col in names:
+            idx = names.index(col)
+
+        else:
+            raise KeyError(f'Column {col!r} not found in the remaining columns.')
+
+        low, high = value
+
+        if low == high:
+            raise ValueError(f'Invalid range for column {col!r}: ({low}, {high}).')
+
+        feature_ranges[idx] = (low, high)
+
+    # Apply min-max normalization
+    for i, col in enumerate(data):
+        low, high = feature_ranges.get(i, (0, 1))
+
+        col_min = np.min(col)
+        col_range = np.ptp(col)
+
+        if col_range == 0:
+            data[i] = low
+        else:
+            data[i] = ((col - col_min)/col_range)*(high - low) + low
+
+    return pd.DataFrame(data.T, columns=names)
     
 def validate_kwargs(keys,allowed_keys,aliases={}):
     """
@@ -436,7 +608,7 @@ def validate_kwargs(keys,allowed_keys,aliases={}):
         allowed_keys : :class:`list` or :class:`array-like`
             A list with the name of the valid arguments.
         aliases : :class:`dict`, optional
-            A python dictionary with alternative aliases for the key arguments ().
+            A python dictionary with alternative aliases for the key arguments.
 
     Examples
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -796,3 +968,20 @@ def strcol_palette():
         for j in range(16):
             print(strcol('■',c=i+j*16) + f' {str(i+j*16):<3.3}  ',end='')
         print()
+
+
+
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡼⠺⠉⠀⠉⠓⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠘⡆⠀⠀⠀⠀⠀⠀wahoo⠀⠀⠀⠀
+#⠀⠀⢀⣀⣀⠀⠀⠀⠀⠀⢸⠀⡐⣊⠁⢲⠊⢑⡇⠀⠀⠀⠀⠀⠀⡀⣀⠀⠀
+#⢠⡼⢄⠜⢚⢢⠀⠀⠀⠀⣾⣿⠡⡀⢀⠐⠂⣰⡆⠀⠀⠀⠀⢠⠚⠺⡡⢓⡄
+#⢠⠱⠼⠒⠊⠸⣄⠀⠀⠀⢜⠗⢀⠔⠉⠉⠉⠀⢙⣖⠆⠀⢀⠜⠈⠖⠣⢞⠆
+#⠀⠉⠲⡀⠀⠀⠀⠑⢄⠀⠀⢹⢸⠀⠀⠀⠀⢀⡬⠟⡠⠖⠁⠀⠀⢀⡜⠁⠀
+#⠀⠀⠀⠑⣄⠀⠀⠀⠀⠑⡖⣼⠤⠵⢦⡀⠒⢧⡒⠛⢤⡀⠀⠀⣠⠎⠀⠀⠀
+#⠀⠀⠀⠀⠈⠳⣄⠀⠀⡰⠁⠈⢆⠀⡆⠈⠦⢣⠇⠀⠀⠑⡤⠞⠁⠀⠀⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⢱⠊⠀⠀⠀⠸⠀⠀⠀⠀⠀⢧⠀⢀⡠⠃⠀⠀⠀⠀⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⠀⠉⡲⠒⠂⠀⠀⠀⠀⠀⠀⠙⢮⡁⠀⠀⠀⠀⠀⠀⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⠀⡔⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠱⡀⠀⠀⠀⠀⠀⠀⠀
+#⠀⠀⠀⠀⠀⠀⠀⡸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢣⠀⠀⠀⠀⠀⠀⠀
+#⠀⠀⠀⠀⠀⠀⡧⠄⠒⠒⠊⠭⠭⠤⠤⠧⠄⠙⠓⠒⡼⠀⠀⠀⠀⠀⠀⠀
