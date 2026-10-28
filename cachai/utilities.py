@@ -480,6 +480,8 @@ def minmax(input_data,exclude=[],ranges={}):
 
     Examples
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    First, we read our data. Let's say we have a table with columns A, B, C, D and E:
+
     .. code-block:: python
         :class: in-block
 
@@ -488,6 +490,22 @@ def minmax(input_data,exclude=[],ranges={}):
 
         data = pd.read_csv('your_path/your_file.csv')
         
+        print(data)
+
+    .. code-block:: python
+        :class: out-block
+
+            A   B           C           D       E
+        0   70  4.578245    3.628275    -0.71   0.265957
+        1   108 1.832429    5.292368    0.21    -0.118633
+        2   173 3.546188    2.808820    -1.35   0.270000
+
+    Now we'll use ``minmax()``. In this example, we'll exclude column A, normalize column B
+    inversely, and normalize column D between 0.3 and 0.8:
+
+    .. code-block:: python
+        :class: in-block
+
         normalized = chu.minmax(data, exclude=['A'], ranges={'B': (1.0, 0.0), 'D': (0.3, 0.8)})
 
         print(normalized)
@@ -496,9 +514,9 @@ def minmax(input_data,exclude=[],ranges={}):
         :class: out-block
 
             B           C           D           E
-        0	0.000000	0.329954	0.505128	0.989597
-        1	1.000000	1.000000	0.800000	0.000000
-        2	0.375866	0.000000	0.300000	1.000000
+        0   0.000000    0.329954    0.505128    0.989597
+        1   1.000000    1.000000    0.800000    0.000000
+        2   0.375866    0.000000    0.300000    1.000000
     '''
 
     # Identify input type and retrieve column names
